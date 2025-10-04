@@ -175,15 +175,24 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
 
   // Send test email
   const sendTestEmail = async () => {
+    console.log('Send test email clicked');
+    console.log('Settings:', settings);
+    
+    // Add a simple alert to test if the function is being called
+    alert('Test email button clicked! Check console for details.');
+    
     if (!settings.emailAddress) {
+      console.log('No email address provided');
       toast.error('Please enter an email address');
       return;
     }
 
+    console.log('Starting test email process...');
     setIsSending(true);
     
     try {
       // Simulate test email
+      console.log('Simulating email send...');
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Log the test email
@@ -196,11 +205,16 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
         message: `Test email sent to ${settings.emailAddress}`
       };
       
+      console.log('Adding to notification log:', logEntry);
       setNotificationLog(prev => [logEntry, ...prev.slice(0, 49)]);
+      
+      console.log('Showing success toast');
       toast.success(`Test email sent successfully to ${settings.emailAddress}!`);
-    } catch (_error) {
+    } catch (error) {
+      console.error('Error sending test email:', error);
       toast.error('Failed to send test email');
     } finally {
+      console.log('Setting isSending to false');
       setIsSending(false);
     }
   };

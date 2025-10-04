@@ -14,6 +14,8 @@ import AnnualOverview from '@/components/AnnualOverview';
 import ExportManager from '@/components/ExportManager';
 import GlobalSearch from '@/components/GlobalSearch';
 import EmailNotifications from '@/components/EmailNotifications';
+import ThemeCustomization from '@/components/ThemeCustomization';
+import BulkOperations from '@/components/BulkOperations';
 import { Contractor, Job, Tag, ScheduleEntry } from '@/types';
 import { demoContractors, demoJobs, demoTags, demoScheduleEntries } from '@/data/demo-data';
 import { loadContractors, loadJobs, loadTags, loadScheduleEntries } from '@/lib/storage';
@@ -214,6 +216,15 @@ export default function Dashboard() {
             <EmailNotifications 
               scheduleEntries={scheduleEntries}
               contractors={contractors}
+            />
+            <ThemeCustomization />
+            <BulkOperations
+              contractors={contractors}
+              jobs={jobs}
+              scheduleEntries={scheduleEntries}
+              onContractorsChange={setContractors}
+              onJobsChange={setJobs}
+              onScheduleEntriesChange={setScheduleEntries}
             />
           </TabsContent>
         </Tabs>

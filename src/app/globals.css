@@ -22,6 +22,7 @@
   --input: 0 0% 89.8%;
   --ring: 0 0% 3.9%;
   --radius: 0.5rem;
+  --base-font-size: 16px;
 }
 
 .dark {
@@ -53,6 +54,7 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+  font-size: var(--base-font-size);
 }
 
 /* Force light mode for all elements */
@@ -131,4 +133,54 @@ html.light * {
 
 [data-radix-dialog-content] button:hover {
   background-color: #e5e7eb !important;
+}
+
+/* Theme customization styles */
+.compact-mode {
+  --spacing-unit: 0.5rem;
+}
+
+.compact-mode .space-y-6 > * + * {
+  margin-top: var(--spacing-unit);
+}
+
+.compact-mode .p-4 {
+  padding: var(--spacing-unit);
+}
+
+.compact-mode .p-6 {
+  padding: calc(var(--spacing-unit) * 1.5);
+}
+
+.no-animations * {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* Custom primary color application */
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.border-primary {
+  border-color: var(--primary) !important;
+}
+
+/* Custom accent color application */
+.bg-accent {
+  background-color: var(--accent) !important;
+}
+
+.text-accent {
+  color: var(--accent) !important;
+}
+
+.border-accent {
+  border-color: var(--accent) !important;
 }
