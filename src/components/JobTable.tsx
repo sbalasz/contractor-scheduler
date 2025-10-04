@@ -75,7 +75,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
       status: 'pending',
       tags: [],
       notes: '',
-      companyId: '',
+      companyId: 'none',
       frequency: {
         interval: 1,
         unit: 'month'
@@ -95,7 +95,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
       status: job.status,
       tags: job.tags,
       notes: job.notes || '',
-      companyId: job.companyId || '',
+      companyId: job.companyId || 'none',
       frequency: job.frequency || {
         interval: 1,
         unit: 'month'
@@ -125,7 +125,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
       createdAt: editingJob?.createdAt || new Date(),
       updatedAt: new Date(),
       notes: formData.notes.trim(),
-      companyId: formData.companyId || undefined,
+      companyId: formData.companyId === 'none' ? undefined : formData.companyId,
       frequency: formData.frequency
     };
 
@@ -520,7 +520,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
                     <SelectValue placeholder="Select a company" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No company selected</SelectItem>
+                    <SelectItem value="none">No company selected</SelectItem>
                     {contractors.map(contractor => (
                       <SelectItem key={contractor.id} value={contractor.id}>
                         {contractor.company} - {contractor.name}
