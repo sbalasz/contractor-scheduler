@@ -122,6 +122,8 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
       service: string;
       company: string;
       frequency: string;
+      location: string;
+      department: string;
       category: string;
       scheduledMonths: boolean[];
     }> = [];
@@ -187,6 +189,8 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
         service: job.title,
         company: company,
         frequency: frequencyText,
+        location: job.location,
+        department: 'Facilities', // Default department
         category: job.tags[0] || 'General',
         scheduledMonths: scheduledMonths,
       });
@@ -300,14 +304,16 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
             <div className="overflow-x-auto">
               <div className="min-w-full">
                 {/* Header Row */}
-                <div className="grid grid-cols-5 gap-2 mb-2 text-sm font-medium text-gray-600 border-b pb-2">
+                <div className="grid grid-cols-7 gap-2 mb-2 text-sm font-medium text-gray-600 border-b pb-2">
+                  <div>Service</div>
                   <div>Frequency</div>
                   <div>Company</div>
-                  <div>Service</div>
+                  <div>Location</div>
+                  <div>Department</div>
                   <div>Category</div>
                   <div className="grid grid-cols-12 gap-1">
                     {months.map(month => (
-                      <div key={month} className="text-center text-xs">{month}</div>
+                      <div key={month} className="text-center text-xs leading-tight py-1">{month}</div>
                     ))}
                   </div>
                 </div>
@@ -317,19 +323,21 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
                   {scheduleData.map((row, index) => (
                     <div 
                       key={index} 
-                      className={`grid grid-cols-5 gap-2 py-2 text-sm rounded ${
+                      className={`grid grid-cols-7 gap-2 py-3 text-sm rounded ${
                         index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
                       }`}
                     >
-                      <div className="font-medium">{row.frequency}</div>
+                      <div className="font-medium text-gray-800">{row.service}</div>
+                      <div className="text-gray-600">{row.frequency}</div>
                       <div className="text-gray-600">{row.company}</div>
-                      <div className="text-gray-800">{row.service}</div>
+                      <div className="text-gray-500">{row.location}</div>
+                      <div className="text-gray-500">{row.department}</div>
                       <div className="text-gray-500">{row.category}</div>
                       <div className="grid grid-cols-12 gap-1">
                         {row.scheduledMonths.map((scheduled, monthIndex) => (
                           <div 
                             key={monthIndex}
-                            className={`h-6 rounded flex items-center justify-center text-xs ${
+                            className={`h-8 rounded flex items-center justify-center text-xs ${
                               scheduled 
                                 ? 'bg-blue-500 text-white font-medium' 
                                 : 'bg-gray-100 text-gray-400'
