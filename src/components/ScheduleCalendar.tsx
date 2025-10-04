@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -123,6 +123,99 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
     return scheduleEntries.map(entry => new Date(entry.startTime));
   };
 
+  // Add contractor names to calendar days
+  useEffect(() => {
+    const addContractorNamesToCalendar = () => {
+      const calendarDays = document.querySelectorAll('[data-day]');
+      
+      calendarDays.forEach((dayElement) => {
+        const dayElementTyped = dayElement as HTMLElement;
+        const dayValue = dayElementTyped.getAttribute('data-day');
+        if (dayValue) {
+          const dayDate = new Date(dayValue);
+          const dayEntries = getEntriesForDate(dayDate);
+          
+          if (dayEntries.length > 0) {
+            // Remove existing contractor information
+            const existingInfo = dayElementTyped.querySelector('.contractor-info-container');
+            if (existingInfo) {
+              existingInfo.remove();
+            }
+            
+            // Create container for contractor information
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'contractor-info-container absolute top-2 left-1 right-1';
+            infoContainer.style.fontSize = '9px';
+            infoContainer.style.color = '#1e40af';
+            infoContainer.style.fontWeight = '600';
+            infoContainer.style.lineHeight = '1.3';
+            infoContainer.style.maxHeight = '75px';
+            infoContainer.style.overflow = 'hidden';
+            infoContainer.style.wordWrap = 'break-word';
+            infoContainer.style.padding = '2px';
+            infoContainer.style.zIndex = '10';
+            
+            // Add each contractor as separate div
+            dayEntries.slice(0, 2).forEach((entry, index) => {
+              const contractorName = getContractorName(entry.contractorId);
+              const jobTitle = getJobTitle(entry.jobId);
+              
+              // Contractor name div
+              const nameDiv = document.createElement('div');
+              nameDiv.className = 'contractor-name';
+              nameDiv.style.fontSize = '9px';
+              nameDiv.style.fontWeight = '700';
+              nameDiv.style.color = '#1e40af';
+              nameDiv.style.marginBottom = '2px';
+              nameDiv.style.lineHeight = '1.2';
+              nameDiv.style.whiteSpace = 'nowrap';
+              nameDiv.style.overflow = 'hidden';
+              nameDiv.style.textOverflow = 'ellipsis';
+              nameDiv.textContent = contractorName;
+              
+              // Job title div
+              const jobDiv = document.createElement('div');
+              jobDiv.className = 'job-title';
+              jobDiv.style.fontSize = '8px';
+              jobDiv.style.fontWeight = '500';
+              jobDiv.style.color = '#4f46e5';
+              jobDiv.style.marginBottom = '3px';
+              jobDiv.style.lineHeight = '1.2';
+              jobDiv.style.fontStyle = 'italic';
+              jobDiv.style.whiteSpace = 'nowrap';
+              jobDiv.style.overflow = 'hidden';
+              jobDiv.style.textOverflow = 'ellipsis';
+              jobDiv.textContent = jobTitle;
+              
+              infoContainer.appendChild(nameDiv);
+              infoContainer.appendChild(jobDiv);
+            });
+            
+            // Add "more" indicator if needed
+            if (dayEntries.length > 2) {
+              const moreDiv = document.createElement('div');
+              moreDiv.className = 'more-indicator';
+              moreDiv.style.fontSize = '8px';
+              moreDiv.style.fontWeight = '600';
+              moreDiv.style.color = '#6b7280';
+              moreDiv.style.marginTop = '2px';
+              moreDiv.textContent = `+${dayEntries.length - 2} more`;
+              infoContainer.appendChild(moreDiv);
+            }
+            
+            dayElementTyped.style.position = 'relative';
+            dayElementTyped.appendChild(infoContainer);
+          }
+        }
+      });
+    };
+
+    // Run after calendar renders
+    const timer = setTimeout(addContractorNamesToCalendar, 100);
+    
+    return () => clearTimeout(timer);
+  }, [scheduleEntries, selectedDate]);
+
   return (
     <div className="space-y-6">
       {/* Calendar and Week View Side by Side */}
@@ -187,7 +280,7 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
                 selected={selectedDate}
                 onSelect={(date) => date && setSelectedDate(date)}
                 weekStartsOn={1}
-                className="rounded-md border w-full [&_.rdp-table]:border-separate [&_.rdp-table]:border-spacing-0 [&_.rdp-table]:border-collapse [&_.rdp-cell]:border [&_.rdp-cell]:border-gray-300 [&_.rdp-cell]:border-solid [&_.rdp-cell]:p-3 [&_.rdp-cell]:text-center [&_.rdp-head_cell]:border [&_.rdp-head_cell]:border-gray-300 [&_.rdp-head_cell]:border-solid [&_.rdp-head_cell]:p-3 [&_.rdp-head_cell]:bg-gray-50 [&_.rdp-head_cell]:font-semibold [&_.rdp-day]:border [&_.rdp-day]:border-gray-300 [&_.rdp-day]:border-solid [&_.rdp-day]:hover:bg-gray-100"
+                className="rounded-md border w-full [&_.rdp-table]:border-separate [&_.rdp-table]:border-spacing-0 [&_.rdp-table]:border-collapse [&_.rdp-cell]:border [&_.rdp-cell]:border-gray-300 [&_.rdp-cell]:border-solid [&_.rdp-cell]:p-3 [&_.rdp-cell]:text-center [&_.rdp-head_cell]:border [&_.rdp-head_cell]:border-gray-300 [&_.rdp-head_cell]:border-solid [&_.rdp-head_cell]:p-3 [&_.rdp-head_cell]:bg-gray-50 [&_.rdp-head_cell]:font-semibold [&_.rdp-day]:border [&_.rdp-day]:border-gray-300 [&_.rdp-day]:border-solid [&_.rdp-day]:hover:bg-gray-100 [&_.rdp-day]:min-h-[100px] [&_.rdp-day]:flex [&_.rdp-day]:flex-col [&_.rdp-day]:items-center [&_.rdp-day]:justify-end [&_.rdp-day]:pb-2 [&_.rdp-day]:overflow-hidden [&_.rdp-day]:relative"
                 modifiers={{
                   hasEntries: getDatesWithEntries()
                 }}
@@ -199,51 +292,50 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
                   }
                 }}
                 modifiersClassNames={{
-                  hasEntries: 'relative'
-                }}
-                components={{
-                  Day: ({ date, displayMonth }) => {
-                    // Only render custom content for days in the current month
-                    if (displayMonth && displayMonth.getMonth() === date.getMonth()) {
-                      const dayEntries = getEntriesForDate(date);
-                      const hasEntries = dayEntries.length > 0;
-                      
-                      return (
-                        <div className="relative h-full w-full flex flex-col items-center justify-center min-h-[60px]">
-                          <span className="text-sm font-medium mb-1">
-                            {date.getDate()}
-                          </span>
-                          {hasEntries && (
-                            <div className="flex flex-col gap-1 w-full px-1">
-                              {dayEntries.slice(0, 2).map((entry, index) => (
-                                <div
-                                  key={index}
-                                  className="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded text-center truncate"
-                                  title={`${getContractorName(entry.contractorId)} - ${getJobTitle(entry.jobId)}`}
-                                >
-                                  {getContractorName(entry.contractorId).split(' ')[0]}
-                                </div>
-                              ))}
-                              {dayEntries.length > 2 && (
-                                <div className="text-xs bg-gray-100 text-gray-600 px-1 py-0.5 rounded text-center">
-                                  +{dayEntries.length - 2}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    }
-                    
-                    // Default rendering for other months
-                    return <span className="text-sm font-medium">{date.getDate()}</span>;
-                  }
+                  hasEntries: 'contractor-day'
                 }}
               />
               <Button onClick={handleAddEntry} className="w-full">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Schedule Entry
               </Button>
+              
+              {/* Contractor Names for Selected Date */}
+              {todayEntries.length > 0 && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                    Contractors scheduled for {selectedDate.toLocaleDateString()}
+                  </h4>
+                  <div className="space-y-2">
+                    {todayEntries.map((entry) => (
+                      <div key={entry.id} className="flex items-center justify-between bg-white p-2 rounded border">
+                        <div>
+                          <span className="font-medium text-gray-900">
+                            {getContractorName(entry.contractorId)}
+                          </span>
+                          <span className="text-gray-600 ml-2">
+                            - {getJobTitle(entry.jobId)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            entry.status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' :
+                            entry.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                            entry.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {entry.status}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {new Date(entry.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                            {new Date(entry.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
