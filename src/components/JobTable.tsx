@@ -211,30 +211,30 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
           </div>
 
           {/* Jobs Table - Desktop */}
-          <div className="hidden md:block border rounded-lg">
+          <div className="hidden lg:block border rounded-lg">
             <div className="relative w-full overflow-auto">
-              <table className="w-full caption-bottom text-sm">
+              <table className="w-full caption-bottom text-sm min-w-[1200px]">
                 <thead className="[&_tr]:border-b">
                   <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Title</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Description</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Location</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Company</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Duration</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Frequency</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Priority</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Status</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Tags</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Actions</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-48">Title</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-40">Description</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-32">Location</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-32">Company</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-20">Duration</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-24">Frequency</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-20">Priority</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-20">Status</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-32">Tags</th>
+                    <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 w-24">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="[&_tr:last-child]:border-0">
                   {filteredJobs.map((job) => (
                     <tr key={job.id} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 font-medium">{job.title}</td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 max-w-xs truncate">{job.description}</td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">{job.location}</td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 font-medium truncate">{job.title}</td>
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 truncate">{job.description}</td>
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 truncate">{job.location}</td>
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0 truncate">
                         {job.companyId ? (
                           (() => {
                             const contractor = contractors.find(c => c.id === job.companyId);
@@ -244,34 +244,34 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
                           <span className="text-gray-400">Not assigned</span>
                         )}
                       </td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">{job.estimatedDuration}h</td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0">{job.estimatedDuration}h</td>
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0">
                         {job.frequency ? (
-                          <span className="text-sm text-gray-600">
+                          <span className="text-xs text-gray-600">
                             Every {job.frequency.interval} {job.frequency.unit}{job.frequency.interval > 1 ? 's' : ''}
                           </span>
                         ) : (
-                          <span className="text-sm text-gray-400">Not set</span>
+                          <span className="text-xs text-gray-400">Not set</span>
                         )}
                       </td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
-                        <Badge className={getPriorityColor(job.priority)}>
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0">
+                        <Badge className={`${getPriorityColor(job.priority)} text-xs`}>
                           {job.priority}
                         </Badge>
                       </td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
-                        <Badge className={getStatusColor(job.status)}>
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0">
+                        <Badge className={`${getStatusColor(job.status)} text-xs`}>
                           {job.status}
                         </Badge>
                       </td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0">
                         <div className="flex flex-wrap gap-1">
-                          {job.tags.map(tagId => {
+                          {job.tags.slice(0, 2).map(tagId => {
                             const tag = tags.find(t => t.id === tagId);
                             return tag ? (
                               <Badge 
                                 key={tagId}
-                                className="relative overflow-hidden font-medium"
+                                className="relative overflow-hidden font-medium text-xs"
                                 style={{
                                   backgroundColor: `${tag.color}20`,
                                   color: tag.color,
@@ -288,23 +288,30 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
                               </Badge>
                             ) : null;
                           })}
+                          {job.tags.length > 2 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{job.tags.length - 2}
+                            </Badge>
+                          )}
                         </div>
                       </td>
-                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
-                        <div className="flex gap-2">
+                      <td className="p-2 align-middle [&:has([role=checkbox])]:pr-0">
+                        <div className="flex gap-1">
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleEditJob(job)}
+                            className="h-8 w-8 p-0"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3 w-3" />
                           </Button>
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteJob(job.id)}
+                            className="h-8 w-8 p-0"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </td>
@@ -316,7 +323,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contr
           </div>
 
           {/* Jobs Cards - Mobile */}
-          <div className="md:hidden space-y-4">
+          <div className="lg:hidden space-y-4">
             {filteredJobs.map((job) => (
               <Card key={job.id} className="p-4">
                 <div className="space-y-3">

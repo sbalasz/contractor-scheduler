@@ -131,8 +131,8 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
     jobs.forEach(job => {
       if (!job.frequency) return;
 
-      const contractor = contractors.find(c => c.id === yearlyEntries.find(e => e.jobId === job.id)?.contractorId);
-      const company = contractor?.company || 'Unknown Company';
+      const contractor = contractors.find(c => c.id === job.companyId);
+      const company = contractor?.company || 'Not assigned';
       
       // Generate scheduled months based on frequency
       const scheduledMonths = Array(12).fill(false);
