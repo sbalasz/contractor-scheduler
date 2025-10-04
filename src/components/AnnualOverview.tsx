@@ -117,7 +117,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
 
   // Monthly service schedule based on frequency
   const generateMonthlySchedule = () => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
     const scheduleData: Array<{
       service: string;
       company: string;
