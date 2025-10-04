@@ -88,6 +88,10 @@ export const demoJobs: Job[] = [
     priority: 'medium',
     status: 'pending',
     tags: ['Electrician', 'Maintenance'],
+    frequency: {
+      interval: 1,
+      unit: 'year'
+    },
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-01-10'),
   },
@@ -100,6 +104,10 @@ export const demoJobs: Job[] = [
     priority: 'high',
     status: 'pending',
     tags: ['Plumber', 'Emergency'],
+    frequency: {
+      interval: 6,
+      unit: 'month'
+    },
     createdAt: new Date('2024-01-12'),
     updatedAt: new Date('2024-01-12'),
   },
@@ -112,6 +120,10 @@ export const demoJobs: Job[] = [
     priority: 'low',
     status: 'completed',
     tags: ['HVAC', 'Maintenance'],
+    frequency: {
+      interval: 3,
+      unit: 'month'
+    },
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-08'),
   },
@@ -124,6 +136,10 @@ export const demoJobs: Job[] = [
     priority: 'medium',
     status: 'in-progress',
     tags: ['Carpenter'],
+    frequency: {
+      interval: 2,
+      unit: 'year'
+    },
     createdAt: new Date('2024-01-18'),
     updatedAt: new Date('2024-01-20'),
   },
@@ -136,6 +152,10 @@ export const demoJobs: Job[] = [
     priority: 'low',
     status: 'pending',
     tags: ['Painter'],
+    frequency: {
+      interval: 1,
+      unit: 'year'
+    },
     createdAt: new Date('2024-01-25'),
     updatedAt: new Date('2024-01-25'),
   },

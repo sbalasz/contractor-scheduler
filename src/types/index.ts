@@ -22,6 +22,10 @@ export interface Job {
   status: 'pending' | 'in-progress' | 'completed' | 'cancelled';
   tags: string[];
   notes?: string;
+  frequency?: {
+    interval: number; // 1-10
+    unit: 'day' | 'week' | 'month' | 'year';
+  };
   createdAt: Date;
   updatedAt: Date;
 }

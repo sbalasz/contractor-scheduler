@@ -34,7 +34,11 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
     priority: 'medium' as 'low' | 'medium' | 'high',
     status: 'pending' as 'pending' | 'in-progress' | 'completed' | 'cancelled',
     tags: [] as string[],
-    notes: ''
+    notes: '',
+    frequency: {
+      interval: 1,
+      unit: 'month' as 'day' | 'week' | 'month' | 'year'
+    }
   });
 
   // Load jobs and tags from localStorage on component mount
@@ -68,7 +72,11 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
       priority: 'medium',
       status: 'pending',
       tags: [],
-      notes: ''
+      notes: '',
+      frequency: {
+        interval: 1,
+        unit: 'month'
+      }
     });
     setIsDialogOpen(true);
   };
@@ -83,7 +91,11 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
       priority: job.priority,
       status: job.status,
       tags: job.tags,
-      notes: job.notes || ''
+      notes: job.notes || '',
+      frequency: job.frequency || {
+        interval: 1,
+        unit: 'month'
+      }
     });
     setIsDialogOpen(true);
   };
@@ -108,7 +120,8 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
       tags: formData.tags,
       createdAt: editingJob?.createdAt || new Date(),
       updatedAt: new Date(),
-      notes: formData.notes.trim()
+      notes: formData.notes.trim(),
+      frequency: formData.frequency
     };
 
     let updatedJobs;
@@ -202,6 +215,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Description</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Location</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Duration</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Frequency</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Priority</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Status</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Tags</th>
@@ -215,6 +229,15 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 max-w-xs truncate">{job.description}</td>
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">{job.location}</td>
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">{job.estimatedDuration}h</td>
+                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                        {job.frequency ? (
+                          <span className="text-sm text-gray-600">
+                            Every {job.frequency.interval} {job.frequency.unit}{job.frequency.interval > 1 ? 's' : ''}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-gray-400">Not set</span>
+                        )}
+                      </td>
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
                         <Badge className={getPriorityColor(job.priority)}>
                           {job.priority}
@@ -314,6 +337,16 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                       <div>
                         <span className="text-sm font-medium text-gray-500">Duration:</span>
                         <p className="text-sm">{job.estimatedDuration}h</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">Frequency:</span>
+                        <p className="text-sm">
+                          {job.frequency ? (
+                            `Every ${job.frequency.interval} ${job.frequency.unit}${job.frequency.interval > 1 ? 's' : ''}`
+                          ) : (
+                            'Not set'
+                          )}
+                        </p>
                       </div>
                       <div>
                         <span className="text-sm font-medium text-gray-500">Priority:</span>
@@ -488,6 +521,55 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                   placeholder="Additional notes"
                   rows={2}
                 />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label className="text-left md:text-right">Frequency</Label>
+                <div className="md:col-span-3 flex gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Every</span>
+                    <Select
+                      value={formData.frequency.interval.toString()}
+                      onValueChange={(value) => setFormData({ 
+                        ...formData, 
+                        frequency: { 
+                          ...formData.frequency, 
+                          interval: parseInt(value) 
+                        } 
+                      })}
+                    >
+                      <SelectTrigger className="w-20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
+                          <SelectItem key={num} value={num.toString()}>
+                            {num}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={formData.frequency.unit}
+                      onValueChange={(value: 'day' | 'week' | 'month' | 'year') => setFormData({ 
+                        ...formData, 
+                        frequency: { 
+                          ...formData.frequency, 
+                          unit: value 
+                        } 
+                      })}
+                    >
+                      <SelectTrigger className="w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="day">Day{formData.frequency.interval > 1 ? 's' : ''}</SelectItem>
+                        <SelectItem value="week">Week{formData.frequency.interval > 1 ? 's' : ''}</SelectItem>
+                        <SelectItem value="month">Month{formData.frequency.interval > 1 ? 's' : ''}</SelectItem>
+                        <SelectItem value="year">Year{formData.frequency.interval > 1 ? 's' : ''}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
             </div>
             <DialogFooter>
