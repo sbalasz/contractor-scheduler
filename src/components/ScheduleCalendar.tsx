@@ -15,6 +15,7 @@ import { Plus, Calendar as CalendarIcon, Clock, User, MapPin, Edit, Trash2 } fro
 import { format, isSameDay, addDays, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 import { ScheduleEntry, Contractor, Job } from '@/types';
 import { demoScheduleEntries, demoJobs } from '@/data/demo-data';
+import { saveScheduleEntries, loadScheduleEntries } from '@/lib/storage';
 import { toast } from 'sonner';
 
 interface ScheduleCalendarProps {
@@ -22,7 +23,9 @@ interface ScheduleCalendarProps {
 }
 
 export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps) {
-  const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>(demoScheduleEntries);
+  const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>(() => 
+    loadScheduleEntries(demoScheduleEntries)
+  );
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<ScheduleEntry | null>(null);
@@ -72,7 +75,9 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
   };
 
   const handleDeleteEntry = (id: string) => {
-    setScheduleEntries(scheduleEntries.filter(e => e.id !== id));
+    const updatedEntries = scheduleEntries.filter(e => e.id !== id);
+    setScheduleEntries(updatedEntries);
+    saveScheduleEntries(updatedEntries);
     toast.success('Schedule entry deleted successfully');
   };
 
@@ -89,13 +94,19 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
       updatedAt: new Date(),
     };
 
+    let updatedEntries: ScheduleEntry[];
     if (editingEntry) {
-      setScheduleEntries(scheduleEntries.map(e => e.id === editingEntry.id ? entryData : e));
+      updatedEntries = scheduleEntries.map(e => e.id === editingEntry.id ? entryData : e);
+      setScheduleEntries(updatedEntries);
       toast.success('Schedule entry updated successfully');
     } else {
-      setScheduleEntries([...scheduleEntries, entryData]);
+      updatedEntries = [...scheduleEntries, entryData];
+      setScheduleEntries(updatedEntries);
       toast.success('Schedule entry added successfully');
     }
+
+    // Save to localStorage
+    saveScheduleEntries(updatedEntries);
 
     setIsDialogOpen(false);
   };

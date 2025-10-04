@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Search, Filter } from 'lucide-react';
 import { Contractor, Tag } from '@/types';
 import { demoTags } from '@/data/demo-data';
+import { saveContractors } from '@/lib/storage';
 import { toast } from 'sonner';
 
 interface ContractorTableProps {
@@ -65,7 +66,9 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
   };
 
   const handleDeleteContractor = (id: string) => {
-    setContractors(contractors.filter(c => c.id !== id));
+    const updatedContractors = contractors.filter(c => c.id !== id);
+    setContractors(updatedContractors);
+    saveContractors(updatedContractors);
     toast.success('Contractor deleted successfully');
   };
 
@@ -82,13 +85,19 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
       updatedAt: new Date(),
     };
 
+    let updatedContractors: Contractor[];
     if (editingContractor) {
-      setContractors(contractors.map(c => c.id === editingContractor.id ? contractorData : c));
+      updatedContractors = contractors.map(c => c.id === editingContractor.id ? contractorData : c);
+      setContractors(updatedContractors);
       toast.success('Contractor updated successfully');
     } else {
-      setContractors([...contractors, contractorData]);
+      updatedContractors = [...contractors, contractorData];
+      setContractors(updatedContractors);
       toast.success('Contractor added successfully');
     }
+
+    // Save to localStorage
+    saveContractors(updatedContractors);
 
     setIsDialogOpen(false);
   };

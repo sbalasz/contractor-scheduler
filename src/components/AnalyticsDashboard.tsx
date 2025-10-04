@@ -4,26 +4,35 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Users, Briefcase, Clock, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { demoContractors, demoJobs, demoScheduleEntries } from '@/data/demo-data';
+import { Contractor, ScheduleEntry } from '@/types';
+import { demoJobs, demoScheduleEntries } from '@/data/demo-data';
+import { loadScheduleEntries } from '@/lib/storage';
 
-export default function AnalyticsDashboard() {
+interface AnalyticsDashboardProps {
+  contractors: Contractor[];
+}
+
+export default function AnalyticsDashboard({ contractors }: AnalyticsDashboardProps) {
+  // Load schedule entries from storage
+  const scheduleEntries = loadScheduleEntries(demoScheduleEntries);
+  
   // Calculate analytics data
-  const totalContractors = demoContractors.length;
+  const totalContractors = contractors.length;
   const totalJobs = demoJobs.length;
   const completedJobs = demoJobs.filter(job => job.status === 'completed').length;
   const pendingJobs = demoJobs.filter(job => job.status === 'pending').length;
   const inProgressJobs = demoJobs.filter(job => job.status === 'in-progress').length;
 
   // Calculate total scheduled hours
-  const totalScheduledHours = demoScheduleEntries.reduce((total, entry) => {
+  const totalScheduledHours = scheduleEntries.reduce((total, entry) => {
     const start = new Date(entry.startTime);
     const end = new Date(entry.endTime);
     const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
     return total + hours;
   }, 0);
 
-  // Contractors by specialty
-  const contractorsBySpecialty = demoContractors.reduce((acc, contractor) => {
+  // Contractors by specialty with percentages
+  const contractorsBySpecialty = contractors.reduce((acc, contractor) => {
     const existing = acc.find(item => item.specialty === contractor.specialty);
     if (existing) {
       existing.count += 1;
@@ -32,6 +41,12 @@ export default function AnalyticsDashboard() {
     }
     return acc;
   }, [] as { specialty: string; count: number }[]);
+
+  // Calculate percentages
+  const contractorsBySpecialtyWithPercentages = contractorsBySpecialty.map(item => ({
+    ...item,
+    percentage: totalContractors > 0 ? Math.round((item.count / totalContractors) * 100) : 0
+  }));
 
   // Jobs by priority
   const jobsByPriority = demoJobs.reduce((acc, job) => {
@@ -152,29 +167,59 @@ export default function AnalyticsDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Contractors by Specialty</CardTitle>
-            <CardDescription>Distribution of contractors by their specialties</CardDescription>
+            <CardTitle>Professional Specialties Distribution</CardTitle>
+            <CardDescription>Percentage breakdown of different professional types</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={contractorsBySpecialty}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ specialty, count }) => `${specialty} (${count})`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="count"
-                >
-                  {contractorsBySpecialty.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Pie Chart */}
+              <div className="flex-1">
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={contractorsBySpecialtyWithPercentages}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ specialty, percentage }) => `${percentage}%`}
+                      outerRadius={90}
+                      fill="#8884d8"
+                      dataKey="count"
+                    >
+                      {contractorsBySpecialtyWithPercentages.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value: number, name: string, props: any) => [
+                        `${props.payload.specialty}: ${value} contractors (${props.payload.percentage}%)`,
+                        'Count'
+                      ]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              
+              {/* Legend with percentages */}
+              <div className="flex-1 space-y-3">
+                <h4 className="text-sm font-semibold text-gray-700 mb-3">Specialty Breakdown</h4>
+                {contractorsBySpecialtyWithPercentages.map((item, index) => (
+                  <div key={item.specialty} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      />
+                      <span className="text-sm font-medium">{item.specialty}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold">{item.percentage}%</div>
+                      <div className="text-xs text-gray-500">{item.count} contractor{item.count !== 1 ? 's' : ''}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -226,8 +271,8 @@ export default function AnalyticsDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {demoContractors.map((contractor) => {
-              const contractorJobs = demoScheduleEntries.filter(entry => entry.contractorId === contractor.id);
+            {contractors.map((contractor) => {
+              const contractorJobs = scheduleEntries.filter(entry => entry.contractorId === contractor.id);
               const completedJobsCount = contractorJobs.filter(entry => entry.status === 'completed').length;
               
               return (

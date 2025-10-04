@@ -12,10 +12,13 @@ import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import ExportManager from '@/components/ExportManager';
 import { Contractor } from '@/types';
 import { demoContractors } from '@/data/demo-data';
+import { loadContractors } from '@/lib/storage';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('contractors');
-  const [contractors, setContractors] = useState<Contractor[]>(demoContractors);
+  const [contractors, setContractors] = useState<Contractor[]>(() => 
+    loadContractors(demoContractors)
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,7 +104,7 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <AnalyticsDashboard />
+                <AnalyticsDashboard contractors={contractors} />
               </CardContent>
             </Card>
           </TabsContent>
