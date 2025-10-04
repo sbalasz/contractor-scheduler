@@ -51,6 +51,36 @@ git push origin main
    - Data export features
    - Tag creation and management
 
+## Troubleshooting
+
+### Site Shows README Instead of Application
+
+If your GitHub Pages site is showing the README file instead of the application:
+
+1. **Check Pages Source**: Go to Settings → Pages and ensure "Source" is set to "GitHub Actions"
+2. **Check Workflow**: Go to Actions tab and verify the workflow completed successfully
+3. **Check Permissions**: Ensure the repository has Pages permissions enabled
+4. **Manual Trigger**: If needed, go to Actions → "Deploy to GitHub Pages" → "Run workflow"
+
+### Build Failures
+
+- Check the Actions tab for error details
+- Ensure all dependencies are properly installed
+- Verify TypeScript compilation passes locally
+
+### Site Not Loading
+
+- Wait a few minutes after deployment
+- Check if GitHub Pages is enabled in repository settings
+- Verify the correct branch is selected for Pages source
+- Clear browser cache and try again
+
+### Functionality Issues
+
+- Test locally with `npm run build` and `npm run export`
+- Check browser console for JavaScript errors
+- Verify all static assets are properly generated
+
 ## Configuration Details
 
 ### Build Configuration
@@ -60,34 +90,19 @@ git push origin main
 - **Build Output**: Generated in `out/` directory
 
 ### GitHub Actions Workflow
-- **Trigger**: Runs on push to `main` branch
+- **Trigger**: Runs on push to `main` branch and manual dispatch
 - **Node Version**: Uses Node.js 18
 - **Build Command**: `npm run build`
-- **Deploy**: Uses `peaceiris/actions-gh-pages@v3`
+- **Deploy**: Uses official GitHub Pages actions
 - **Publish Directory**: `./out`
+- **Permissions**: Configured for Pages deployment
 
 ### Files Created for Deployment
 - `.github/workflows/deploy.yml` - GitHub Actions workflow
 - `public/.nojekyll` - Prevents Jekyll processing
+- `index.html` - Fallback redirect page
 - `README.md` - Project documentation
 - `next.config.ts` - Next.js configuration for static export
-
-## Troubleshooting
-
-### Build Failures
-- Check the Actions tab for error details
-- Ensure all dependencies are properly installed
-- Verify TypeScript compilation passes locally
-
-### Site Not Loading
-- Wait a few minutes after deployment
-- Check if GitHub Pages is enabled in repository settings
-- Verify the correct branch is selected for Pages source
-
-### Functionality Issues
-- Test locally with `npm run build` and `npm run export`
-- Check browser console for JavaScript errors
-- Verify all static assets are properly generated
 
 ## Custom Domain (Optional)
 
@@ -120,3 +135,4 @@ For issues with deployment:
 - Check GitHub Actions logs
 - Review Next.js static export documentation
 - Verify GitHub Pages documentation for any service-specific issues
+- Ensure repository has proper permissions for Pages deployment
