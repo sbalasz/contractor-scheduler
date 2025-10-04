@@ -1,4 +1,4 @@
-import { Contractor, Job, ScheduleEntry, Tag, RecurringPattern } from '@/types';
+import { Contractor, Job, ScheduleEntry, Tag } from '@/types';
 
 export const demoTags: Tag[] = [
   { id: '1', name: 'Electrician', color: '#3B82F6', description: 'Electrical work specialists' },

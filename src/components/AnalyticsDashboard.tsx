@@ -187,7 +187,7 @@ export default function AnalyticsDashboard({ contractors }: AnalyticsDashboardPr
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ specialty, percentage }) => `${percentage}%`}
+                      label={({ percentage }) => `${percentage}%`}
                       outerRadius={90}
                       fill="#8884d8"
                       dataKey="count"
@@ -196,12 +196,12 @@ export default function AnalyticsDashboard({ contractors }: AnalyticsDashboardPr
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value: number, name: string, props: any) => [
-                        `${props.payload.specialty}: ${value} contractors (${props.payload.percentage}%)`,
-                        'Count'
-                      ]}
-                    />
+                      <Tooltip 
+                        formatter={(value: number, name: string, props: { payload?: { specialty: string; percentage: number } }) => [
+                          `${props.payload?.specialty || 'Unknown'}: ${value} contractors (${props.payload?.percentage || 0}%)`,
+                          'Count'
+                        ]}
+                      />
                   </PieChart>
                 </ResponsiveContainer>
               </div>

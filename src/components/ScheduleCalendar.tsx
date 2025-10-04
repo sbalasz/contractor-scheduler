@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Calendar as CalendarIcon, Clock, User, MapPin, Edit, Trash2 } from 'lucide-react';
 import { format, isSameDay, addDays, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
-import { ScheduleEntry, Contractor, Job } from '@/types';
+import { ScheduleEntry, Contractor } from '@/types';
 import { demoScheduleEntries, demoJobs } from '@/data/demo-data';
 import { saveScheduleEntries, loadScheduleEntries } from '@/lib/storage';
 import { toast } from 'sonner';
@@ -42,11 +42,11 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
     setScheduleEntries(loadedEntries);
   }, []);
 
-  const getEntriesForDate = (date: Date) => {
+  const getEntriesForDate = useCallback((date: Date) => {
     return scheduleEntries.filter(entry => 
       isSameDay(new Date(entry.startTime), date)
     );
-  };
+  }, [scheduleEntries]);
 
   const getEntriesForWeek = (date: Date) => {
     const start = startOfWeek(date, { weekStartsOn: 1 }); // Monday
@@ -115,10 +115,10 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
     setIsDialogOpen(false);
   };
 
-  const getContractorName = (contractorId: string) => {
+  const getContractorName = useCallback((contractorId: string) => {
     const contractor = contractors.find(c => c.id === contractorId);
     return contractor?.name || 'Unknown';
-  };
+  }, [contractors]);
 
   const getJobTitle = (jobId: string) => {
     const job = demoJobs.find(j => j.id === jobId);
@@ -171,7 +171,7 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
             infoContainer.style.zIndex = '10';
             
             // Add each contractor as separate div
-            dayEntries.slice(0, 2).forEach((entry, index) => {
+            dayEntries.slice(0, 2).forEach((entry) => {
               const contractorName = getContractorName(entry.contractorId);
               const jobTitle = getJobTitle(entry.jobId);
               
@@ -229,7 +229,7 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
     const timer = setTimeout(addContractorNamesToCalendar, 100);
     
     return () => clearTimeout(timer);
-  }, [scheduleEntries, selectedDate]);
+  }, [scheduleEntries, selectedDate, contractors, getContractorName, getEntriesForDate]);
 
   return (
     <div className="space-y-6">
@@ -536,7 +536,7 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value: any) => setFormData({ ...formData, status: value })}
+                onValueChange={(value: 'scheduled' | 'in-progress' | 'completed' | 'cancelled') => setFormData({ ...formData, status: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />

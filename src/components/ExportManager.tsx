@@ -25,7 +25,7 @@ export default function ExportManager() {
   const exportToCSV = () => {
     try {
       let csvContent = '';
-      let filename = 'contractor-data';
+      const filename = 'contractor-data';
 
       if (selectedDataTypes.contractors) {
         csvContent += 'Contractors\n';
@@ -116,7 +116,7 @@ export default function ExportManager() {
       const XLSX = await import('xlsx');
       
       const workbook = XLSX.utils.book_new();
-      let filename = 'contractor-data';
+      const filename = 'contractor-data';
 
       if (selectedDataTypes.contractors) {
         const contractorsData = demoContractors.map(contractor => ({
