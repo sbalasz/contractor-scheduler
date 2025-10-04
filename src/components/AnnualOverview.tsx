@@ -115,6 +115,88 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
     { name: 'Pending', value: yearlyStats.totalJobs - yearlyStats.completedJobs - yearlyStats.cancelledJobs, color: '#F59E0B' },
   ].filter(status => status.value > 0);
 
+  // Monthly service schedule based on frequency
+  const generateMonthlySchedule = () => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const scheduleData: Array<{
+      service: string;
+      company: string;
+      frequency: string;
+      category: string;
+      scheduledMonths: boolean[];
+    }> = [];
+
+    jobs.forEach(job => {
+      if (!job.frequency) return;
+
+      const contractor = contractors.find(c => c.id === yearlyEntries.find(e => e.jobId === job.id)?.contractorId);
+      const company = contractor?.company || 'Unknown Company';
+      
+      // Generate scheduled months based on frequency
+      const scheduledMonths = Array(12).fill(false);
+      
+      if (job.frequency.unit === 'month') {
+        // Monthly services - schedule every X months starting from January
+        for (let i = 0; i < 12; i += job.frequency.interval) {
+          scheduledMonths[i] = true;
+        }
+      } else if (job.frequency.unit === 'year') {
+        // Annual services - schedule once per year
+        if (job.frequency.interval === 1) {
+          scheduledMonths[0] = true; // January
+        } else if (job.frequency.interval === 2) {
+          scheduledMonths[0] = true; // Every 2 years - January
+        }
+      } else if (job.frequency.unit === 'week') {
+        // Weekly services - schedule every X weeks (approximate to months)
+        const weeksPerMonth = 4.33;
+        const monthsInterval = Math.ceil(job.frequency.interval / weeksPerMonth);
+        for (let i = 0; i < 12; i += monthsInterval) {
+          scheduledMonths[i] = true;
+        }
+      } else if (job.frequency.unit === 'day') {
+        // Daily services - schedule every X days (approximate to months)
+        const daysPerMonth = 30.44;
+        const monthsInterval = Math.ceil(job.frequency.interval / daysPerMonth);
+        for (let i = 0; i < 12; i += monthsInterval) {
+          scheduledMonths[i] = true;
+        }
+      }
+
+      // Determine frequency display text
+      let frequencyText = '';
+      if (job.frequency.unit === 'month') {
+        if (job.frequency.interval === 1) frequencyText = 'Monthly';
+        else if (job.frequency.interval === 3) frequencyText = 'Quarterly';
+        else if (job.frequency.interval === 6) frequencyText = 'Bi-Annual';
+        else frequencyText = `Every ${job.frequency.interval} months`;
+      } else if (job.frequency.unit === 'year') {
+        if (job.frequency.interval === 1) frequencyText = 'Annual';
+        else if (job.frequency.interval === 2) frequencyText = 'Every 2 Years';
+        else frequencyText = `Every ${job.frequency.interval} years`;
+      } else if (job.frequency.unit === 'week') {
+        if (job.frequency.interval === 1) frequencyText = 'Weekly';
+        else if (job.frequency.interval === 2) frequencyText = 'Bi-Weekly';
+        else frequencyText = `Every ${job.frequency.interval} weeks`;
+      } else if (job.frequency.unit === 'day') {
+        if (job.frequency.interval === 1) frequencyText = 'Daily';
+        else frequencyText = `Every ${job.frequency.interval} days`;
+      }
+
+      scheduleData.push({
+        service: job.title,
+        company: company,
+        frequency: frequencyText,
+        category: job.tags[0] || 'General',
+        scheduledMonths: scheduledMonths,
+      });
+    });
+
+    return { months, scheduleData };
+  };
+
+  const { months, scheduleData } = generateMonthlySchedule();
+
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
 
   return (
@@ -201,6 +283,82 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
           </CardContent>
         </Card>
       </div>
+
+      {/* Monthly Service Schedule */}
+      {scheduleData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Monthly Service Schedule - {selectedYear}
+            </CardTitle>
+            <CardDescription>
+              Services scheduled by frequency across the 12 months
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <div className="min-w-full">
+                {/* Header Row */}
+                <div className="grid grid-cols-5 gap-2 mb-2 text-sm font-medium text-gray-600 border-b pb-2">
+                  <div>Frequency</div>
+                  <div>Company</div>
+                  <div>Service</div>
+                  <div>Category</div>
+                  <div className="grid grid-cols-12 gap-1">
+                    {months.map(month => (
+                      <div key={month} className="text-center text-xs">{month}</div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Data Rows */}
+                <div className="space-y-1">
+                  {scheduleData.map((row, index) => (
+                    <div 
+                      key={index} 
+                      className={`grid grid-cols-5 gap-2 py-2 text-sm rounded ${
+                        index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                      }`}
+                    >
+                      <div className="font-medium">{row.frequency}</div>
+                      <div className="text-gray-600">{row.company}</div>
+                      <div className="text-gray-800">{row.service}</div>
+                      <div className="text-gray-500">{row.category}</div>
+                      <div className="grid grid-cols-12 gap-1">
+                        {row.scheduledMonths.map((scheduled, monthIndex) => (
+                          <div 
+                            key={monthIndex}
+                            className={`h-6 rounded flex items-center justify-center text-xs ${
+                              scheduled 
+                                ? 'bg-blue-500 text-white font-medium' 
+                                : 'bg-gray-100 text-gray-400'
+                            }`}
+                          >
+                            {scheduled ? '●' : ''}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Legend */}
+                <div className="mt-4 flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                    <span>Scheduled</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-gray-100 rounded"></div>
+                    <span>Not Scheduled</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
