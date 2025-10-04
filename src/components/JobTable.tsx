@@ -192,7 +192,8 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
             </Button>
           </div>
 
-          <div className="border rounded-lg">
+          {/* Jobs Table - Desktop */}
+          <div className="hidden md:block border rounded-lg">
             <div className="relative w-full overflow-auto">
               <table className="w-full caption-bottom text-sm">
                 <thead className="[&_tr]:border-b">
@@ -274,10 +275,96 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
               </table>
             </div>
           </div>
+
+          {/* Jobs Cards - Mobile */}
+          <div className="md:hidden space-y-4">
+            {filteredJobs.map((job) => (
+              <Card key={job.id} className="p-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-lg">{job.title}</h3>
+                      <p className="text-sm text-gray-600">{job.location}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditJob(job)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteJob(job.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Description:</span>
+                      <p className="text-sm">{job.description}</p>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">Duration:</span>
+                        <p className="text-sm">{job.estimatedDuration}h</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">Priority:</span>
+                        <Badge className={`${getPriorityColor(job.priority)} text-xs`}>
+                          {job.priority}
+                        </Badge>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-500">Status:</span>
+                        <Badge className={`${getStatusColor(job.status)} text-xs`}>
+                          {job.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Tags:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {job.tags.map(tagId => {
+                          const tag = tags.find(t => t.id === tagId);
+                          return tag ? (
+                            <Badge 
+                              key={tagId}
+                              className="relative overflow-hidden font-medium text-xs"
+                              style={{
+                                backgroundColor: `${tag.color}20`,
+                                color: tag.color,
+                                borderColor: tag.color,
+                                borderWidth: '1px',
+                                borderStyle: 'solid'
+                              }}
+                            >
+                              <div 
+                                className="absolute left-0 top-0 bottom-0 w-1"
+                                style={{ backgroundColor: tag.color }}
+                              />
+                              <span className="ml-2">{tag.name}</span>
+                            </Badge>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingJob ? 'Edit Job' : 'Add New Job'}</DialogTitle>
               <DialogDescription>
@@ -285,55 +372,55 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-right">Title</Label>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-left md:text-right">Title</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="col-span-3"
+                  className="md:col-span-3"
                   placeholder="Job title"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">Description</Label>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="description" className="text-left md:text-right">Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="col-span-3"
+                  className="md:col-span-3"
                   placeholder="Job description"
                   rows={3}
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="location" className="text-right">Location</Label>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="location" className="text-left md:text-right">Location</Label>
                 <Input
                   id="location"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="col-span-3"
+                  className="md:col-span-3"
                   placeholder="Job location"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="duration" className="text-right">Duration (hrs)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="duration" className="text-left md:text-right">Duration (hrs)</Label>
                 <Input
                   id="duration"
                   type="number"
                   value={formData.estimatedDuration}
                   onChange={(e) => setFormData({ ...formData, estimatedDuration: e.target.value })}
-                  className="col-span-3"
+                  className="md:col-span-3"
                   placeholder="Estimated duration in hours"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="priority" className="text-right">Priority</Label>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="priority" className="text-left md:text-right">Priority</Label>
                 <Select
                   value={formData.priority}
                   onValueChange={(value: 'low' | 'medium' | 'high') => setFormData({ ...formData, priority: value })}
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="md:col-span-3">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -343,13 +430,13 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="status" className="text-right">Status</Label>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-left md:text-right">Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value: 'pending' | 'in-progress' | 'completed' | 'cancelled') => setFormData({ ...formData, status: value })}
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="md:col-span-3">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -360,9 +447,9 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Tags</Label>
-                <div className="col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label className="text-left md:text-right">Tags</Label>
+                <div className="md:col-span-3">
                   <div className="flex flex-wrap gap-2">
                     {tags.map(tag => (
                       <Button
@@ -391,13 +478,13 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="notes" className="text-right">Notes</Label>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="notes" className="text-left md:text-right">Notes</Label>
                 <Textarea
                   id="notes"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="col-span-3"
+                  className="md:col-span-3"
                   placeholder="Additional notes"
                   rows={2}
                 />

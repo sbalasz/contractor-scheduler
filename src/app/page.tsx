@@ -39,15 +39,15 @@ export default function Dashboard() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Contractor Scheduler</h1>
-              <p className="text-gray-600 mt-1">Manage contractors, jobs, and schedules</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Contractor Scheduler</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Manage contractors, jobs, and schedules</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Settings</span>
               </Button>
             </div>
           </div>
@@ -55,32 +55,38 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="contractors" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Contractors
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
+            <TabsTrigger value="contractors" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Contractors</span>
+              <span className="sm:hidden">Contractors</span>
             </TabsTrigger>
-            <TabsTrigger value="jobs" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Jobs
+            <TabsTrigger value="jobs" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Jobs</span>
+              <span className="sm:hidden">Jobs</span>
             </TabsTrigger>
-            <TabsTrigger value="calendar" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Calendar
+            <TabsTrigger value="calendar" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Calendar</span>
+              <span className="sm:hidden">Calendar</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
+            <TabsTrigger value="analytics" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="export" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Export
+            <TabsTrigger value="export" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Export</span>
+              <span className="sm:hidden">Export</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Settings
+            <TabsTrigger value="settings" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Settings</span>
+              <span className="sm:hidden">Settings</span>
             </TabsTrigger>
           </TabsList>
 

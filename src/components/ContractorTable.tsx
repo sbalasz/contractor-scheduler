@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import { Contractor, Job, Tag } from '@/types';
 import { demoTags, demoJobs } from '@/data/demo-data';
@@ -197,8 +198,8 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
         </Button>
       </div>
 
-      {/* Contractors Table */}
-      <div className="border rounded-lg">
+      {/* Contractors Table - Desktop */}
+      <div className="hidden md:block border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
@@ -275,9 +276,88 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
         </Table>
       </div>
 
+      {/* Contractors Cards - Mobile */}
+      <div className="md:hidden space-y-4">
+        {filteredContractors.map((contractor) => (
+          <Card key={contractor.id} className="p-4">
+            <div className="space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-lg">{contractor.name}</h3>
+                  <p className="text-sm text-gray-600">{contractor.company}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditContractor(contractor)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteContractor(contractor.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Specialty:</span>
+                  <p className="text-sm">{contractor.specialty}</p>
+                </div>
+                
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Contact:</span>
+                  <p className="text-sm">{contractor.email}</p>
+                  <p className="text-sm text-gray-600">{contractor.phone}</p>
+                </div>
+                
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Rate:</span>
+                  <p className="text-sm">£{contractor.hourlyRate}/hr</p>
+                </div>
+                
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Tags:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {contractor.tags.map((tag) => {
+                      const tagData = tags.find(t => t.name === tag);
+                      return (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="relative overflow-hidden font-medium text-xs"
+                          style={{ 
+                            backgroundColor: tagData?.color + '20', 
+                            color: tagData?.color,
+                            borderColor: tagData?.color,
+                            borderWidth: '1px',
+                            borderStyle: 'solid'
+                          }}
+                        >
+                          <div 
+                            className="absolute left-0 top-0 bottom-0 w-1"
+                            style={{ backgroundColor: tagData?.color }}
+                          />
+                          <span className="ml-2">{tag}</span>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
       {/* Add/Edit Contractor Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingContractor ? 'Edit Contractor' : 'Add New Contractor'}
@@ -287,7 +367,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name *</Label>
               <Input
