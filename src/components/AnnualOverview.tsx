@@ -311,9 +311,9 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
                   <div>Location</div>
                   <div>Department</div>
                   <div>Category</div>
-                  <div className="grid grid-cols-12 gap-1">
+                  <div className="grid grid-cols-12 gap-1 min-w-max">
                     {months.map(month => (
-                      <div key={month} className="text-center text-xs leading-tight py-1">{month}</div>
+                      <div key={month} className="text-center text-[10px] leading-tight py-1 min-w-0 overflow-hidden">{month}</div>
                     ))}
                   </div>
                 </div>
@@ -333,11 +333,11 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
                       <div className="text-gray-500">{row.location}</div>
                       <div className="text-gray-500">{row.department}</div>
                       <div className="text-gray-500">{row.category}</div>
-                      <div className="grid grid-cols-12 gap-1">
+                      <div className="grid grid-cols-12 gap-1 min-w-max">
                         {row.scheduledMonths.map((scheduled, monthIndex) => (
                           <div 
                             key={monthIndex}
-                            className={`h-8 rounded flex items-center justify-center text-xs ${
+                            className={`h-8 rounded flex items-center justify-center text-xs min-w-0 ${
                               scheduled 
                                 ? 'bg-blue-500 text-white font-medium' 
                                 : 'bg-gray-100 text-gray-400'
