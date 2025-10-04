@@ -84,26 +84,26 @@ export default function AnalyticsDashboard({ contractors }: AnalyticsDashboardPr
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Contractors</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Companies</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalContractors}</div>
             <p className="text-xs text-muted-foreground">
-              Active contractors in system
+              Active companies in system
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Services</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalJobs}</div>
             <p className="text-xs text-muted-foreground">
-              Jobs created
+              Services created
             </p>
           </CardContent>
         </Card>
@@ -173,8 +173,8 @@ export default function AnalyticsDashboard({ contractors }: AnalyticsDashboardPr
 
         <Card>
           <CardHeader>
-            <CardTitle>Professional Specialties Distribution</CardTitle>
-            <CardDescription>Percentage breakdown of different professional types</CardDescription>
+            <CardTitle>Professional Services Distribution</CardTitle>
+            <CardDescription>Percentage breakdown of different professional service types</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col lg:flex-row gap-6">

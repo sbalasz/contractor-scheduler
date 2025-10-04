@@ -152,8 +152,8 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Job Management</CardTitle>
-        <CardDescription>Manage your jobs, view their details, and organize them by tags.</CardDescription>
+        <CardTitle>Service Management</CardTitle>
+        <CardDescription>Manage your services, view their details, and organize them by tags.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -161,7 +161,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Search jobs..."
+                placeholder="Search services..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -188,7 +188,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
             </Select>
             <Button onClick={handleAddJob} className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
-              Add Job
+              Add Service
             </Button>
           </div>
 
@@ -366,9 +366,9 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingJob ? 'Edit Job' : 'Add New Job'}</DialogTitle>
+              <DialogTitle>{editingJob ? 'Edit Service' : 'Add New Service'}</DialogTitle>
               <DialogDescription>
-                {editingJob ? 'Update the job details below.' : 'Fill in the details to create a new job.'}
+                {editingJob ? 'Update the service details below.' : 'Fill in the details to create a new service.'}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -379,7 +379,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="md:col-span-3"
-                  placeholder="Job title"
+                  placeholder="Service title"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
@@ -389,7 +389,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="md:col-span-3"
-                  placeholder="Job description"
+                  placeholder="Service description"
                   rows={3}
                 />
               </div>
@@ -400,7 +400,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="md:col-span-3"
-                  placeholder="Job location"
+                  placeholder="Service location"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
@@ -495,7 +495,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                 Cancel
               </Button>
               <Button onClick={handleSubmit} disabled={!formData.title.trim()}>
-                {editingJob ? 'Update Job' : 'Add Job'}
+                {editingJob ? 'Update Service' : 'Add Service'}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -319,7 +319,7 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
               {todayEntries.length > 0 && (
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <h4 className="text-sm font-semibold text-blue-800 mb-2">
-                    Contractors scheduled for {selectedDate.toLocaleDateString()}
+                    Companies scheduled for {selectedDate.toLocaleDateString()}
                   </h4>
                   <div className="space-y-2">
                     {todayEntries.map((entry) => (
@@ -431,13 +431,13 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
               {editingEntry ? 'Edit Schedule Entry' : 'Add New Schedule Entry'}
             </DialogTitle>
             <DialogDescription>
-              {editingEntry ? 'Update schedule entry information' : 'Schedule a new contractor appointment'}
+              {editingEntry ? 'Update schedule entry information' : 'Schedule a new company appointment'}
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="contractor">Contractor *</Label>
+              <Label htmlFor="contractor">Company *</Label>
               <Select
                 value={formData.contractorId}
                 onValueChange={(value) => setFormData({ ...formData, contractorId: value })}
@@ -455,7 +455,7 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="job">Job *</Label>
+              <Label htmlFor="job">Service *</Label>
               <Select
                 value={formData.jobId}
                 onValueChange={(value) => setFormData({ ...formData, jobId: value })}

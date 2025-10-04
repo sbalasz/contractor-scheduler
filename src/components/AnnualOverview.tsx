@@ -157,7 +157,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Jobs</p>
+                <p className="text-sm font-medium text-gray-600">Total Services</p>
                 <p className="text-2xl font-bold">{yearlyStats.totalJobs}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-blue-600" />
@@ -193,7 +193,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Contractors</p>
+                <p className="text-sm font-medium text-gray-600">Active Companies</p>
                 <p className="text-2xl font-bold">{yearlyStats.uniqueContractors}</p>
               </div>
               <Users className="h-8 w-8 text-orange-600" />
@@ -221,7 +221,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
                 <Tooltip 
                   formatter={(value, name) => [
                     name === 'revenue' ? `£${value.toLocaleString()}` : value,
-                    name === 'jobs' ? 'Jobs' : name === 'hours' ? 'Hours' : 'Revenue'
+                    name === 'jobs' ? 'Services' : name === 'hours' ? 'Hours' : 'Revenue'
                   ]}
                 />
                 <Line type="monotone" dataKey="jobs" stroke="#3B82F6" strokeWidth={2} />
@@ -234,7 +234,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
         {/* Job Status Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle>Job Status Distribution</CardTitle>
+            <CardTitle>Service Status Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -262,7 +262,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
       {/* Contractor Performance */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Performing Contractors - {selectedYear}</CardTitle>
+          <CardTitle>Top Performing Companies - {selectedYear}</CardTitle>
           <CardDescription>Ranked by total revenue generated</CardDescription>
         </CardHeader>
         <CardContent>
@@ -280,7 +280,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-center">
-                    <p className="text-sm text-gray-600">Jobs</p>
+                    <p className="text-sm text-gray-600">Services</p>
                     <p className="font-semibold">{contractor.jobs}</p>
                   </div>
                   <div className="text-center">
@@ -308,13 +308,13 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
       {jobTypeData.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Job Type Analysis - {selectedYear}</CardTitle>
-            <CardDescription>Distribution of jobs by type</CardDescription>
+            <CardTitle>Service Type Analysis - {selectedYear}</CardTitle>
+            <CardDescription>Distribution of services by type</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold mb-4">Job Count</h3>
+                <h3 className="font-semibold mb-4">Service Count</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={jobTypeData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -326,7 +326,7 @@ export default function AnnualOverview({ contractors, jobs }: AnnualOverviewProp
                 </ResponsiveContainer>
               </div>
               <div>
-                <h3 className="font-semibold mb-4">Revenue by Job Type</h3>
+                <h3 className="font-semibold mb-4">Revenue by Service Type</h3>
                 <div className="space-y-3">
                   {jobTypeData.map((job, index) => (
                     <div key={job.name} className="flex items-center justify-between">

@@ -169,7 +169,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Search contractors..."
+            placeholder="Search companies..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -194,7 +194,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
         </Select>
         <Button onClick={handleAddContractor} className="w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
-          Add Contractor
+          Add Company
         </Button>
       </div>
 
@@ -205,7 +205,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Company</TableHead>
-              <TableHead>Specialty</TableHead>
+              <TableHead>Service</TableHead>
               <TableHead>Contact</TableHead>
               <TableHead>Rate</TableHead>
               <TableHead>Tags</TableHead>
@@ -306,7 +306,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
               
               <div className="space-y-2">
                 <div>
-                  <span className="text-sm font-medium text-gray-500">Specialty:</span>
+                  <span className="text-sm font-medium text-gray-500">Service:</span>
                   <p className="text-sm">{contractor.specialty}</p>
                 </div>
                 
@@ -360,10 +360,10 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingContractor ? 'Edit Contractor' : 'Add New Contractor'}
+              {editingContractor ? 'Edit Company' : 'Add New Company'}
             </DialogTitle>
             <DialogDescription>
-              {editingContractor ? 'Update contractor information' : 'Add a new contractor to your system'}
+              {editingContractor ? 'Update company information' : 'Add a new company to your system'}
             </DialogDescription>
           </DialogHeader>
           
@@ -406,13 +406,13 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="specialty">Job Specialty *</Label>
+              <Label htmlFor="specialty">Service Specialty *</Label>
               <Select
                 value={formData.specialty}
                 onValueChange={(value) => setFormData({ ...formData, specialty: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a job specialty" />
+                  <SelectValue placeholder="Select a service specialty" />
                 </SelectTrigger>
                 <SelectContent>
                   {jobs.map(job => (

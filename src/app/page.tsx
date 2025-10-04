@@ -42,8 +42,8 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Contractor Scheduler</h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-1">Manage contractors, jobs, and schedules</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Company Scheduler</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Manage companies, services, and schedules</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
               <Button variant="outline" size="sm" className="text-xs sm:text-sm">
@@ -61,13 +61,13 @@ export default function Dashboard() {
           <TabsList className="grid w-full grid-cols-3 sm:grid-cols-7 h-auto">
             <TabsTrigger value="contractors" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
               <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Contractors</span>
-              <span className="sm:hidden">Contractors</span>
+              <span className="hidden sm:inline">Companies</span>
+              <span className="sm:hidden">Companies</span>
             </TabsTrigger>
             <TabsTrigger value="jobs" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Jobs</span>
-              <span className="sm:hidden">Jobs</span>
+              <span className="hidden sm:inline">Services</span>
+              <span className="sm:hidden">Services</span>
             </TabsTrigger>
             <TabsTrigger value="calendar" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
               <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -99,9 +99,9 @@ export default function Dashboard() {
           <TabsContent value="contractors" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Contractor Management</CardTitle>
+                <CardTitle>Company Management</CardTitle>
                 <CardDescription>
-                  Manage your contractors, view their details, and organize them by tags.
+                  Manage your companies, view their details, and organize them by tags.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -129,7 +129,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Schedule Calendar</CardTitle>
                 <CardDescription>
-                  View and manage contractor schedules, add new appointments, and track job progress.
+                  View and manage company schedules, add new appointments, and track service progress.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -143,7 +143,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Analytics Dashboard</CardTitle>
                 <CardDescription>
-                  View insights and statistics about your contractors and jobs.
+                  View insights and statistics about your companies and services.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -161,7 +161,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Export Data</CardTitle>
                 <CardDescription>
-                  Export your contractor and schedule data to CSV or Excel files.
+                  Export your company and schedule data to CSV or Excel files.
                 </CardDescription>
               </CardHeader>
               <CardContent>
