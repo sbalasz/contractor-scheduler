@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -11,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Mail, Bell, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { ScheduleEntry, Contractor } from '@/types';
 import { toast } from 'sonner';
+import { LoadingButton } from '@/components/ui/loading';
 
 interface EmailNotificationProps {
   scheduleEntries: ScheduleEntry[];
@@ -107,7 +107,10 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
 
   // Check for upcoming appointments
   const checkUpcomingAppointments = async () => {
-    if (!settings.enabled || !settings.emailAddress) return;
+    if (!settings.enabled || !settings.emailAddress) {
+      toast.error('Please enable notifications and enter an email address');
+      return;
+    }
 
     const now = new Date();
     const reminderTime = new Date(now.getTime() + settings.reminderTime * 60 * 60 * 1000);
@@ -117,6 +120,11 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
       return startTime > now && startTime <= reminderTime && entry.status === 'scheduled';
     });
 
+    if (upcomingEntries.length === 0) {
+      toast.info('No upcoming appointments found within the reminder timeframe');
+      return;
+    }
+
     setIsSending(true);
     
     try {
@@ -124,9 +132,7 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
         await sendEmailNotification(entry, 'upcoming');
       }
       
-      if (upcomingEntries.length > 0) {
-        toast.success(`Sent ${upcomingEntries.length} reminder email(s)`);
-      }
+      toast.success(`Sent ${upcomingEntries.length} reminder email(s) to ${settings.emailAddress}`);
     } catch (_error) {
       toast.error('Failed to send some notifications');
     } finally {
@@ -136,13 +142,21 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
 
   // Check for overdue appointments
   const checkOverdueAppointments = async () => {
-    if (!settings.enabled || !settings.emailAddress) return;
+    if (!settings.enabled || !settings.emailAddress) {
+      toast.error('Please enable notifications and enter an email address');
+      return;
+    }
 
     const now = new Date();
     const overdueEntries = scheduleEntries.filter(entry => {
       const startTime = new Date(entry.startTime);
       return startTime < now && entry.status === 'scheduled';
     });
+
+    if (overdueEntries.length === 0) {
+      toast.info('No overdue appointments found');
+      return;
+    }
 
     setIsSending(true);
     
@@ -151,9 +165,7 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
         await sendEmailNotification(entry, 'overdue');
       }
       
-      if (overdueEntries.length > 0) {
-        toast.success(`Sent ${overdueEntries.length} overdue notification(s)`);
-      }
+      toast.success(`Sent ${overdueEntries.length} overdue notification(s) to ${settings.emailAddress}`);
     } catch (_error) {
       toast.error('Failed to send some notifications');
     } finally {
@@ -173,7 +185,19 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
     try {
       // Simulate test email
       await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Test email sent successfully!');
+      
+      // Log the test email
+      const logEntry: NotificationLog = {
+        id: Date.now().toString(),
+        scheduleEntryId: 'test',
+        type: 'upcoming',
+        sentAt: new Date(),
+        status: 'sent',
+        message: `Test email sent to ${settings.emailAddress}`
+      };
+      
+      setNotificationLog(prev => [logEntry, ...prev.slice(0, 49)]);
+      toast.success(`Test email sent successfully to ${settings.emailAddress}!`);
     } catch (_error) {
       toast.error('Failed to send test email');
     } finally {
@@ -220,7 +244,11 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
               value={settings.emailAddress}
               onChange={(e) => setSettings(prev => ({ ...prev, emailAddress: e.target.value }))}
               disabled={!settings.enabled}
+              required
             />
+            {settings.emailAddress && !settings.emailAddress.includes('@') && (
+              <p className="text-sm text-red-500">Please enter a valid email address</p>
+            )}
           </div>
 
           {/* Reminder Time */}
@@ -299,29 +327,32 @@ export default function EmailNotifications({ scheduleEntries, contractors }: Ema
 
           {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
-            <Button
+            <LoadingButton
+              isLoading={isSending}
               onClick={sendTestEmail}
               disabled={!settings.enabled || !settings.emailAddress || isSending}
               variant="outline"
             >
               <Mail className="h-4 w-4 mr-2" />
               Send Test Email
-            </Button>
-            <Button
+            </LoadingButton>
+            <LoadingButton
+              isLoading={isSending}
               onClick={checkUpcomingAppointments}
               disabled={!settings.enabled || !settings.emailAddress || isSending}
             >
               <Bell className="h-4 w-4 mr-2" />
               Check Upcoming
-            </Button>
-            <Button
+            </LoadingButton>
+            <LoadingButton
+              isLoading={isSending}
               onClick={checkOverdueAppointments}
               disabled={!settings.enabled || !settings.emailAddress || isSending}
               variant="destructive"
             >
               <Clock className="h-4 w-4 mr-2" />
               Check Overdue
-            </Button>
+            </LoadingButton>
           </div>
         </CardContent>
       </Card>

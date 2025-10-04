@@ -96,22 +96,6 @@ html.light * {
   color: hsl(var(--popover-foreground)) !important;
 }
 
-/* Force light mode for all elements */
-html.light,
-html.light * {
-  color-scheme: light;
-}
-
-/* Ensure dialogs and modals use light theme */
-[data-radix-popper-content-wrapper],
-[data-radix-dialog-content],
-[data-radix-popover-content],
-[data-radix-select-content],
-[data-radix-dropdown-menu-content] {
-  background-color: hsl(var(--background)) !important;
-  color: hsl(var(--foreground)) !important;
-}
-
 /* Specific styling for the Add Schedule Entry dialog */
 [data-radix-dialog-content] {
   background-color: white !important;
@@ -147,25 +131,4 @@ html.light * {
 
 [data-radix-dialog-content] button:hover {
   background-color: #e5e7eb !important;
-}
-
-/* Force light mode for all shadcn components */
-.bg-background {
-  background-color: hsl(var(--background)) !important;
-}
-
-.text-foreground {
-  color: hsl(var(--foreground)) !important;
-}
-
-.bg-card {
-  background-color: hsl(var(--card)) !important;
-}
-
-.text-card-foreground {
-  color: hsl(var(--card-foreground)) !important;
-}
-
-.bg-popover {
-  background-color: hsl(var(--popover)) !important;
 }
