@@ -1,8 +1,9 @@
-import { Contractor, ScheduleEntry } from '@/types';
+import { Contractor, ScheduleEntry, Tag } from '@/types';
 
 const STORAGE_KEYS = {
   CONTRACTORS: 'contractor-scheduler-contractors',
   SCHEDULE_ENTRIES: 'contractor-scheduler-schedule-entries',
+  TAGS: 'contractor-scheduler-tags',
 } as const;
 
 // Generic storage functions
@@ -62,6 +63,15 @@ export const loadScheduleEntries = (defaultEntries: ScheduleEntry[]): ScheduleEn
       endDate: entry.recurringPattern.endDate ? new Date(entry.recurringPattern.endDate) : undefined,
     } : undefined,
   }));
+};
+
+// Tag-specific functions
+export const saveTags = (tags: Tag[]): void => {
+  saveToStorage(STORAGE_KEYS.TAGS, tags);
+};
+
+export const loadTags = (defaultTags: Tag[]): Tag[] => {
+  return loadFromStorage(STORAGE_KEYS.TAGS, defaultTags);
 };
 
 // Clear all data (useful for testing)

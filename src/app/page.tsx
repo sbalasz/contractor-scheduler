@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,9 +16,13 @@ import { loadContractors } from '@/lib/storage';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('contractors');
-  const [contractors, setContractors] = useState<Contractor[]>(() => 
-    loadContractors(demoContractors)
-  );
+  const [contractors, setContractors] = useState<Contractor[]>(demoContractors);
+
+  // Load contractors from localStorage after component mounts
+  useEffect(() => {
+    const loadedContractors = loadContractors(demoContractors);
+    setContractors(loadedContractors);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">

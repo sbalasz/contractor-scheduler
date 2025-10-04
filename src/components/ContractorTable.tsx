@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Search, Filter } from 'lucide-react';
 import { Contractor, Tag } from '@/types';
 import { demoTags } from '@/data/demo-data';
-import { saveContractors } from '@/lib/storage';
+import { saveContractors, saveTags, loadTags } from '@/lib/storage';
 import { toast } from 'sonner';
 
 interface ContractorTableProps {
@@ -25,6 +25,10 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingContractor, setEditingContractor] = useState<Contractor | null>(null);
+  const [tags, setTags] = useState<Tag[]>(demoTags);
+  const [isCreatingTag, setIsCreatingTag] = useState(false);
+  const [newTagName, setNewTagName] = useState('');
+  const [newTagColor, setNewTagColor] = useState('#3B82F6');
   const [formData, setFormData] = useState<Partial<Contractor>>({
     name: '',
     company: '',
@@ -35,6 +39,12 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
     hourlyRate: 0,
     notes: '',
   });
+
+  // Load tags from localStorage after component mounts
+  useEffect(() => {
+    const loadedTags = loadTags(demoTags);
+    setTags(loadedTags);
+  }, []);
 
   const filteredContractors = contractors.filter(contractor => {
     const matchesSearch = contractor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -110,6 +120,42 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
     setFormData({ ...formData, tags: newTags });
   };
 
+  const handleCreateTag = () => {
+    if (!newTagName.trim()) {
+      toast.error('Please enter a tag name');
+      return;
+    }
+
+    if (tags.some(tag => tag.name.toLowerCase() === newTagName.toLowerCase())) {
+      toast.error('A tag with this name already exists');
+      return;
+    }
+
+    const newTag: Tag = {
+      id: Date.now().toString(),
+      name: newTagName.trim(),
+      color: newTagColor,
+      description: `Custom tag: ${newTagName.trim()}`
+    };
+
+    const updatedTags = [...tags, newTag];
+    setTags(updatedTags);
+    saveTags(updatedTags);
+    
+    // Add the new tag to the current contractor
+    const currentTags = formData.tags || [];
+    setFormData({ ...formData, tags: [...currentTags, newTag.name] });
+    
+    setNewTagName('');
+    setIsCreatingTag(false);
+    toast.success('Tag created successfully');
+  };
+
+  const handleCancelTagCreation = () => {
+    setNewTagName('');
+    setIsCreatingTag(false);
+  };
+
   return (
     <div className="space-y-4">
       {/* Search and Filter Controls */}
@@ -129,8 +175,12 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Tags</SelectItem>
-            {demoTags.map(tag => (
-              <SelectItem key={tag.id} value={tag.name}>
+            {tags.map(tag => (
+              <SelectItem key={tag.id} value={tag.name} className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full border"
+                  style={{ backgroundColor: tag.color }}
+                />
                 {tag.name}
               </SelectItem>
             ))}
@@ -168,18 +218,29 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
                     <div className="text-gray-500">{contractor.phone}</div>
                   </div>
                 </TableCell>
-                <TableCell>${contractor.hourlyRate}/hr</TableCell>
+                <TableCell>£{contractor.hourlyRate}/hr</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {contractor.tags.map((tag) => {
-                      const tagData = demoTags.find(t => t.name === tag);
+                      const tagData = tags.find(t => t.name === tag);
                       return (
                         <Badge
                           key={tag}
                           variant="secondary"
-                          style={{ backgroundColor: tagData?.color + '20', color: tagData?.color }}
+                          className="relative overflow-hidden font-medium"
+                          style={{ 
+                            backgroundColor: tagData?.color + '20', 
+                            color: tagData?.color,
+                            borderColor: tagData?.color,
+                            borderWidth: '1px',
+                            borderStyle: 'solid'
+                          }}
                         >
-                          {tag}
+                          <div 
+                            className="absolute left-0 top-0 bottom-0 w-1"
+                            style={{ backgroundColor: tagData?.color }}
+                          />
+                          <span className="ml-2">{tag}</span>
                         </Badge>
                       );
                     })}
@@ -269,7 +330,7 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="rate">Hourly Rate</Label>
+              <Label htmlFor="rate">Hourly Rate (£)</Label>
               <Input
                 id="rate"
                 type="number"
@@ -283,20 +344,96 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
           <div className="space-y-2">
             <Label>Tags</Label>
             <div className="flex flex-wrap gap-2">
-              {demoTags.map((tag) => (
+              {tags.map((tag) => (
                 <Button
                   key={tag.id}
                   variant={formData.tags?.includes(tag.name) ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleTagToggle(tag.name)}
+                  className="relative overflow-hidden"
                   style={{
-                    backgroundColor: formData.tags?.includes(tag.name) ? tag.color : undefined,
-                    color: formData.tags?.includes(tag.name) ? 'white' : undefined,
+                    backgroundColor: formData.tags?.includes(tag.name) 
+                      ? tag.color 
+                      : `${tag.color}20`,
+                    color: formData.tags?.includes(tag.name) 
+                      ? 'white' 
+                      : tag.color,
+                    borderColor: tag.color,
+                    borderWidth: '2px',
                   }}
                 >
-                  {tag.name}
+                  <div 
+                    className="absolute left-0 top-0 bottom-0 w-1"
+                    style={{ backgroundColor: tag.color }}
+                  />
+                  <span className="ml-2 font-medium">{tag.name}</span>
                 </Button>
               ))}
+            </div>
+            
+            {/* Custom Tag Creation */}
+            <div className="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-blue-50">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <Label className="text-sm font-semibold text-gray-700">Create Custom Tag</Label>
+                  <p className="text-xs text-gray-500 mt-1">Add a new tag to categorize contractors</p>
+                </div>
+                <Button
+                  type="button"
+                  variant={isCreatingTag ? "secondary" : "default"}
+                  size="sm"
+                  onClick={() => setIsCreatingTag(!isCreatingTag)}
+                  className="font-medium"
+                >
+                  {isCreatingTag ? 'Cancel' : '+ Add Tag'}
+                </Button>
+              </div>
+              
+              {isCreatingTag && (
+                <div className="space-y-4 p-4 bg-white rounded-lg border">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Tag Name</Label>
+                    <Input
+                      placeholder="Enter tag name (e.g., Emergency, Weekend)"
+                      value={newTagName}
+                      onChange={(e) => setNewTagName(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Tag Color</Label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={newTagColor}
+                        onChange={(e) => setNewTagColor(e.target.value)}
+                        className="w-12 h-10 border rounded cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-600">Choose a color for this tag</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      type="button"
+                      onClick={handleCreateTag}
+                      disabled={!newTagName.trim()}
+                      className="flex-1"
+                    >
+                      Create Tag
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancelTagCreation}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

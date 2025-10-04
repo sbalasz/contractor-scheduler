@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Briefcase, Clock, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
@@ -13,8 +14,13 @@ interface AnalyticsDashboardProps {
 }
 
 export default function AnalyticsDashboard({ contractors }: AnalyticsDashboardProps) {
-  // Load schedule entries from storage
-  const scheduleEntries = loadScheduleEntries(demoScheduleEntries);
+  const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>(demoScheduleEntries);
+  
+  // Load schedule entries from localStorage after component mounts
+  useEffect(() => {
+    const loadedEntries = loadScheduleEntries(demoScheduleEntries);
+    setScheduleEntries(loadedEntries);
+  }, []);
   
   // Calculate analytics data
   const totalContractors = contractors.length;
@@ -289,7 +295,7 @@ export default function AnalyticsDashboard({ contractors }: AnalyticsDashboardPr
                     </div>
                   </div>
                   <div className="text-right space-y-1">
-                    <div className="text-sm font-medium">${contractor.hourlyRate}/hr</div>
+                    <div className="text-sm font-medium">£{contractor.hourlyRate}/hr</div>
                     <div className="text-xs text-gray-600">
                       {contractorJobs.length} scheduled jobs
                     </div>

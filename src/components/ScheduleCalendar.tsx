@@ -23,9 +23,7 @@ interface ScheduleCalendarProps {
 }
 
 export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps) {
-  const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>(() => 
-    loadScheduleEntries(demoScheduleEntries)
-  );
+  const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>(demoScheduleEntries);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<ScheduleEntry | null>(null);
@@ -37,6 +35,12 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
     status: 'scheduled',
     notes: '',
   });
+
+  // Load schedule entries from localStorage after component mounts
+  useEffect(() => {
+    const loadedEntries = loadScheduleEntries(demoScheduleEntries);
+    setScheduleEntries(loadedEntries);
+  }, []);
 
   const getEntriesForDate = (date: Date) => {
     return scheduleEntries.filter(entry => 
