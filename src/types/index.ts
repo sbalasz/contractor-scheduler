@@ -22,6 +22,7 @@ export interface Job {
   status: 'pending' | 'in-progress' | 'completed' | 'cancelled';
   tags: string[];
   notes?: string;
+  companyId?: string; // Link to Contractor/Company
   frequency?: {
     interval: number; // 1-10
     unit: 'day' | 'week' | 'month' | 'year';

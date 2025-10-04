@@ -121,6 +121,7 @@ export default function Dashboard() {
               onJobsChange={setJobs}
               tags={tags}
               onTagsChange={setTags}
+              contractors={contractors}
             />
           </TabsContent>
 

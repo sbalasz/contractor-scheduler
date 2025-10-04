@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
-import { Job, Tag } from '@/types';
+import { Job, Tag, Contractor } from '@/types';
 import { saveJobs, loadJobs, loadTags } from '@/lib/storage';
 import { demoJobs, demoTags } from '@/data/demo-data';
 
@@ -19,9 +19,10 @@ interface JobTableProps {
   onJobsChange: (jobs: Job[]) => void;
   tags: Tag[];
   onTagsChange: (tags: Tag[]) => void;
+  contractors: Contractor[];
 }
 
-export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: JobTableProps) {
+export default function JobTable({ jobs, onJobsChange, tags, onTagsChange, contractors }: JobTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
     status: 'pending' as 'pending' | 'in-progress' | 'completed' | 'cancelled',
     tags: [] as string[],
     notes: '',
+    companyId: '',
     frequency: {
       interval: 1,
       unit: 'month' as 'day' | 'week' | 'month' | 'year'
@@ -73,6 +75,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
       status: 'pending',
       tags: [],
       notes: '',
+      companyId: '',
       frequency: {
         interval: 1,
         unit: 'month'
@@ -92,6 +95,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
       status: job.status,
       tags: job.tags,
       notes: job.notes || '',
+      companyId: job.companyId || '',
       frequency: job.frequency || {
         interval: 1,
         unit: 'month'
@@ -121,6 +125,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
       createdAt: editingJob?.createdAt || new Date(),
       updatedAt: new Date(),
       notes: formData.notes.trim(),
+      companyId: formData.companyId || undefined,
       frequency: formData.frequency
     };
 
@@ -214,6 +219,7 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Title</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Description</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Location</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Company</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Duration</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Frequency</th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Priority</th>
@@ -228,6 +234,16 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 font-medium">{job.title}</td>
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 max-w-xs truncate">{job.description}</td>
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">{job.location}</td>
+                      <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                        {job.companyId ? (
+                          (() => {
+                            const contractor = contractors.find(c => c.id === job.companyId);
+                            return contractor ? contractor.company : 'Unknown Company';
+                          })()
+                        ) : (
+                          <span className="text-gray-400">Not assigned</span>
+                        )}
+                      </td>
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">{job.estimatedDuration}h</td>
                       <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
                         {job.frequency ? (
@@ -331,6 +347,20 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                     <div>
                       <span className="text-sm font-medium text-gray-500">Description:</span>
                       <p className="text-sm">{job.description}</p>
+                    </div>
+                    
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Company:</span>
+                      <p className="text-sm">
+                        {job.companyId ? (
+                          (() => {
+                            const contractor = contractors.find(c => c.id === job.companyId);
+                            return contractor ? contractor.company : 'Unknown Company';
+                          })()
+                        ) : (
+                          <span className="text-gray-400">Not assigned</span>
+                        )}
+                      </p>
                     </div>
                     
                     <div className="flex justify-between">
@@ -477,6 +507,25 @@ export default function JobTable({ jobs, onJobsChange, tags, onTagsChange }: Job
                     <SelectItem value="in-progress">In Progress</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
                     <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <Label htmlFor="company" className="text-left md:text-right">Company</Label>
+                <Select
+                  value={formData.companyId}
+                  onValueChange={(value) => setFormData({ ...formData, companyId: value })}
+                >
+                  <SelectTrigger className="md:col-span-3">
+                    <SelectValue placeholder="Select a company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No company selected</SelectItem>
+                    {contractors.map(contractor => (
+                      <SelectItem key={contractor.id} value={contractor.id}>
+                        {contractor.company} - {contractor.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

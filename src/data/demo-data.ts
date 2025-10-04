@@ -88,6 +88,7 @@ export const demoJobs: Job[] = [
     priority: 'medium',
     status: 'pending',
     tags: ['Electrician', 'Maintenance'],
+    companyId: '1', // Smith Electrical Services
     frequency: {
       interval: 1,
       unit: 'year'
@@ -104,6 +105,7 @@ export const demoJobs: Job[] = [
     priority: 'high',
     status: 'pending',
     tags: ['Plumber', 'Emergency'],
+    companyId: '2', // Garcia Plumbing
     frequency: {
       interval: 6,
       unit: 'month'
@@ -120,6 +122,7 @@ export const demoJobs: Job[] = [
     priority: 'low',
     status: 'completed',
     tags: ['HVAC', 'Maintenance'],
+    companyId: '3', // Johnson HVAC Solutions
     frequency: {
       interval: 3,
       unit: 'month'
@@ -136,6 +139,7 @@ export const demoJobs: Job[] = [
     priority: 'medium',
     status: 'in-progress',
     tags: ['Carpenter'],
+    companyId: '4', // Wilson Carpentry
     frequency: {
       interval: 2,
       unit: 'year'
@@ -152,6 +156,7 @@ export const demoJobs: Job[] = [
     priority: 'low',
     status: 'pending',
     tags: ['Painter'],
+    companyId: '5', // Brown Painting Co.
     frequency: {
       interval: 1,
       unit: 'year'
