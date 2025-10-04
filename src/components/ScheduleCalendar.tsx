@@ -13,17 +13,20 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Calendar as CalendarIcon, Clock, User, MapPin, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, isSameDay, addDays, startOfWeek, endOfWeek, eachDayOfInterval, addMonths, subMonths, getYear, getMonth } from 'date-fns';
-import { ScheduleEntry, Contractor } from '@/types';
+import { ScheduleEntry, Contractor, Job } from '@/types';
 import { demoScheduleEntries, demoJobs } from '@/data/demo-data';
 import { saveScheduleEntries, loadScheduleEntries } from '@/lib/storage';
 import { toast } from 'sonner';
+import RecurringAppointments from './RecurringAppointments';
 
 interface ScheduleCalendarProps {
   contractors: Contractor[];
+  jobs: Job[];
+  scheduleEntries: ScheduleEntry[];
+  onScheduleEntriesChange: (entries: ScheduleEntry[]) => void;
 }
 
-export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps) {
-  const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>(demoScheduleEntries);
+export default function ScheduleCalendar({ contractors, jobs, scheduleEntries, onScheduleEntriesChange }: ScheduleCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -40,8 +43,8 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
   // Load schedule entries from localStorage after component mounts
   useEffect(() => {
     const loadedEntries = loadScheduleEntries(demoScheduleEntries);
-    setScheduleEntries(loadedEntries);
-  }, []);
+    onScheduleEntriesChange(loadedEntries);
+  }, [onScheduleEntriesChange]);
 
   const getEntriesForDate = useCallback((date: Date) => {
     return scheduleEntries.filter(entry => 
@@ -81,7 +84,7 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
 
   const handleDeleteEntry = (id: string) => {
     const updatedEntries = scheduleEntries.filter(e => e.id !== id);
-    setScheduleEntries(updatedEntries);
+    onScheduleEntriesChange(updatedEntries);
     saveScheduleEntries(updatedEntries);
     toast.success('Schedule entry deleted successfully');
   };
@@ -102,11 +105,11 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
     let updatedEntries: ScheduleEntry[];
     if (editingEntry) {
       updatedEntries = scheduleEntries.map(e => e.id === editingEntry.id ? entryData : e);
-      setScheduleEntries(updatedEntries);
+      onScheduleEntriesChange(updatedEntries);
       toast.success('Schedule entry updated successfully');
     } else {
       updatedEntries = [...scheduleEntries, entryData];
-      setScheduleEntries(updatedEntries);
+      onScheduleEntriesChange(updatedEntries);
       toast.success('Schedule entry added successfully');
     }
 
@@ -272,6 +275,14 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
 
   return (
     <div className="space-y-6">
+      {/* Recurring Appointments Section */}
+      <RecurringAppointments
+        contractors={contractors}
+        jobs={jobs}
+        scheduleEntries={scheduleEntries}
+        onScheduleEntriesChange={onScheduleEntriesChange}
+      />
+      
       {/* Calendar and Week View Side by Side */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Week View - Left Side */}

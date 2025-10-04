@@ -13,6 +13,7 @@ import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import AnnualOverview from '@/components/AnnualOverview';
 import ExportManager from '@/components/ExportManager';
 import GlobalSearch from '@/components/GlobalSearch';
+import EmailNotifications from '@/components/EmailNotifications';
 import { Contractor, Job, Tag, ScheduleEntry } from '@/types';
 import { demoContractors, demoJobs, demoTags, demoScheduleEntries } from '@/data/demo-data';
 import { loadContractors, loadJobs, loadTags, loadScheduleEntries } from '@/lib/storage';
@@ -167,7 +168,12 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ScheduleCalendar contractors={contractors} />
+                <ScheduleCalendar 
+                  contractors={contractors}
+                  jobs={jobs}
+                  scheduleEntries={scheduleEntries}
+                  onScheduleEntriesChange={setScheduleEntries}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -205,20 +211,10 @@ export default function Dashboard() {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Settings</CardTitle>
-                <CardDescription>
-                  Configure your dashboard preferences and manage tags.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Settings className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600">Settings panel coming soon...</p>
-        </div>
-              </CardContent>
-            </Card>
+            <EmailNotifications 
+              scheduleEntries={scheduleEntries}
+              contractors={contractors}
+            />
           </TabsContent>
         </Tabs>
       </main>
