@@ -89,14 +89,21 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
   };
 
   const handleSaveContractor = () => {
-    if (!formData.name || !formData.company || !formData.email || !formData.phone || !formData.specialty) {
-      toast.error('Please fill in all required fields');
+    if (!formData.name) {
+      toast.error('Please enter the contractor name');
       return;
     }
 
     const contractorData: Contractor = {
-      ...formData as Contractor,
       id: editingContractor?.id || Date.now().toString(),
+      name: formData.name || '',
+      company: formData.company || '',
+      email: formData.email || '',
+      phone: formData.phone || '',
+      specialty: formData.specialty || '',
+      tags: formData.tags || [],
+      hourlyRate: formData.hourlyRate || 0,
+      notes: formData.notes || '',
       createdAt: editingContractor?.createdAt || new Date(),
       updatedAt: new Date(),
     };
@@ -216,15 +223,15 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
             {filteredContractors.map((contractor) => (
               <TableRow key={contractor.id}>
                 <TableCell className="font-medium">{contractor.name}</TableCell>
-                <TableCell>{contractor.company}</TableCell>
-                <TableCell>{contractor.specialty}</TableCell>
+                <TableCell>{contractor.company || 'Not specified'}</TableCell>
+                <TableCell>{contractor.specialty || 'Not specified'}</TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    <div>{contractor.email}</div>
-                    <div className="text-gray-500">{contractor.phone}</div>
+                    <div>{contractor.email || 'Not specified'}</div>
+                    <div className="text-gray-500">{contractor.phone || 'Not specified'}</div>
                   </div>
                 </TableCell>
-                <TableCell>£{contractor.hourlyRate}/hr</TableCell>
+                <TableCell>{contractor.hourlyRate ? `£${contractor.hourlyRate}/hr` : 'Not specified'}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {contractor.tags.map((tag) => {
@@ -307,18 +314,18 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
               <div className="space-y-2">
                 <div>
                   <span className="text-sm font-medium text-gray-500">Service:</span>
-                  <p className="text-sm">{contractor.specialty}</p>
+                  <p className="text-sm">{contractor.specialty || 'Not specified'}</p>
                 </div>
                 
                 <div>
                   <span className="text-sm font-medium text-gray-500">Contact:</span>
-                  <p className="text-sm">{contractor.email}</p>
-                  <p className="text-sm text-gray-600">{contractor.phone}</p>
+                  <p className="text-sm">{contractor.email || 'Not specified'}</p>
+                  <p className="text-sm text-gray-600">{contractor.phone || 'Not specified'}</p>
                 </div>
                 
                 <div>
                   <span className="text-sm font-medium text-gray-500">Rate:</span>
-                  <p className="text-sm">£{contractor.hourlyRate}/hr</p>
+                  <p className="text-sm">{contractor.hourlyRate ? `£${contractor.hourlyRate}/hr` : 'Not specified'}</p>
                 </div>
                 
                 <div>
@@ -378,7 +385,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="company">Company *</Label>
+              <Label htmlFor="company">Company</Label>
               <Input
                 id="company"
                 value={formData.company}
@@ -387,7 +394,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -397,7 +404,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone *</Label>
+              <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
                 value={formData.phone}
@@ -406,7 +413,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="specialty">Service Specialty *</Label>
+              <Label htmlFor="specialty">Service Specialty</Label>
               <Select
                 value={formData.specialty}
                 onValueChange={(value) => setFormData({ ...formData, specialty: value })}
