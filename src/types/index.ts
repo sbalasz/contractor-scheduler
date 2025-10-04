@@ -21,6 +21,7 @@ export interface Job {
   priority: 'low' | 'medium' | 'high';
   status: 'pending' | 'in-progress' | 'completed' | 'cancelled';
   tags: string[];
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }

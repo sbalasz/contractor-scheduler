@@ -10,17 +10,19 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
-import { Contractor, Tag } from '@/types';
-import { demoTags } from '@/data/demo-data';
-import { saveContractors, saveTags, loadTags } from '@/lib/storage';
+import { Contractor, Job, Tag } from '@/types';
+import { demoTags, demoJobs } from '@/data/demo-data';
+import { saveContractors, saveTags, loadTags, loadJobs } from '@/lib/storage';
 import { toast } from 'sonner';
 
 interface ContractorTableProps {
   contractors: Contractor[];
   setContractors: (contractors: Contractor[]) => void;
+  jobs: Job[];
+  onJobsChange: (jobs: Job[]) => void;
 }
 
-export default function ContractorTable({ contractors, setContractors }: ContractorTableProps) {
+export default function ContractorTable({ contractors, setContractors, jobs, onJobsChange }: ContractorTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -40,11 +42,14 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
     notes: '',
   });
 
-  // Load tags from localStorage after component mounts
+  // Load tags and jobs from localStorage after component mounts
   useEffect(() => {
     const loadedTags = loadTags(demoTags);
     setTags(loadedTags);
-  }, []);
+    
+    const loadedJobs = loadJobs(demoJobs);
+    onJobsChange(loadedJobs);
+  }, [onJobsChange]);
 
   const filteredContractors = contractors.filter(contractor => {
     const matchesSearch = contractor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -321,13 +326,22 @@ export default function ContractorTable({ contractors, setContractors }: Contrac
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="specialty">Specialty *</Label>
-              <Input
-                id="specialty"
+              <Label htmlFor="specialty">Job Specialty *</Label>
+              <Select
                 value={formData.specialty}
-                onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
-                placeholder="Electrical, Plumbing, etc."
-              />
+                onValueChange={(value) => setFormData({ ...formData, specialty: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a job specialty" />
+                </SelectTrigger>
+                <SelectContent>
+                  {jobs.map(job => (
+                    <SelectItem key={job.id} value={job.title}>
+                      {job.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="rate">Hourly Rate (£)</Label>

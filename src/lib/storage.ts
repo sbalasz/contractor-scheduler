@@ -1,7 +1,8 @@
-import { Contractor, ScheduleEntry, Tag } from '@/types';
+import { Contractor, Job, ScheduleEntry, Tag } from '@/types';
 
 const STORAGE_KEYS = {
   CONTRACTORS: 'contractor-scheduler-contractors',
+  JOBS: 'contractor-scheduler-jobs',
   SCHEDULE_ENTRIES: 'contractor-scheduler-schedule-entries',
   TAGS: 'contractor-scheduler-tags',
 } as const;
@@ -62,6 +63,22 @@ export const loadScheduleEntries = (defaultEntries: ScheduleEntry[]): ScheduleEn
       ...entry.recurringPattern,
       endDate: entry.recurringPattern.endDate ? new Date(entry.recurringPattern.endDate) : undefined,
     } : undefined,
+  }));
+};
+
+// Job-specific functions
+export const saveJobs = (jobs: Job[]): void => {
+  saveToStorage(STORAGE_KEYS.JOBS, jobs);
+};
+
+export const loadJobs = (defaultJobs: Job[]): Job[] => {
+  const loaded = loadFromStorage(STORAGE_KEYS.JOBS, defaultJobs);
+  
+  // Convert date strings back to Date objects
+  return loaded.map(job => ({
+    ...job,
+    createdAt: new Date(job.createdAt),
+    updatedAt: new Date(job.updatedAt),
   }));
 };
 

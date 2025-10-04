@@ -7,21 +7,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, Users, BarChart3, FileText, Settings } from 'lucide-react';
 // Import components (we'll create these next)
 import ContractorTable from '@/components/ContractorTable';
+import JobTable from '@/components/JobTable';
 import ScheduleCalendar from '@/components/ScheduleCalendar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import ExportManager from '@/components/ExportManager';
-import { Contractor } from '@/types';
-import { demoContractors } from '@/data/demo-data';
-import { loadContractors } from '@/lib/storage';
+import { Contractor, Job, Tag } from '@/types';
+import { demoContractors, demoJobs, demoTags } from '@/data/demo-data';
+import { loadContractors, loadJobs, loadTags } from '@/lib/storage';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('contractors');
   const [contractors, setContractors] = useState<Contractor[]>(demoContractors);
+  const [jobs, setJobs] = useState<Job[]>(demoJobs);
+  const [tags, setTags] = useState<Tag[]>(demoTags);
 
-  // Load contractors from localStorage after component mounts
+  // Load data from localStorage after component mounts
   useEffect(() => {
     const loadedContractors = loadContractors(demoContractors);
     setContractors(loadedContractors);
+    
+    const loadedJobs = loadJobs(demoJobs);
+    setJobs(loadedJobs);
+    
+    const loadedTags = loadTags(demoTags);
+    setTags(loadedTags);
   }, []);
 
   return (
@@ -48,10 +57,14 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="contractors" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Contractors
+            </TabsTrigger>
+            <TabsTrigger value="jobs" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Jobs
             </TabsTrigger>
             <TabsTrigger value="calendar" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
@@ -80,9 +93,23 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ContractorTable contractors={contractors} setContractors={setContractors} />
+                <ContractorTable 
+                  contractors={contractors} 
+                  setContractors={setContractors}
+                  jobs={jobs}
+                  onJobsChange={setJobs}
+                />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="jobs" className="space-y-6">
+            <JobTable 
+              jobs={jobs} 
+              onJobsChange={setJobs}
+              tags={tags}
+              onTagsChange={setTags}
+            />
           </TabsContent>
 
           <TabsContent value="calendar" className="space-y-6">
