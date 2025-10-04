@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Users, BarChart3, FileText, Settings } from 'lucide-react';
+import { Calendar, Users, BarChart3, FileText, Settings, CalendarDays } from 'lucide-react';
 // Import components (we'll create these next)
 import ContractorTable from '@/components/ContractorTable';
 import JobTable from '@/components/JobTable';
 import ScheduleCalendar from '@/components/ScheduleCalendar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import AnnualOverview from '@/components/AnnualOverview';
 import ExportManager from '@/components/ExportManager';
 import { Contractor, Job, Tag } from '@/types';
 import { demoContractors, demoJobs, demoTags } from '@/data/demo-data';
@@ -57,7 +58,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-7 h-auto">
             <TabsTrigger value="contractors" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
               <Users className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Contractors</span>
@@ -77,6 +78,11 @@ export default function Dashboard() {
               <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Analytics</span>
               <span className="sm:hidden">Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="annual" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
+              <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Annual</span>
+              <span className="sm:hidden">Annual</span>
             </TabsTrigger>
             <TabsTrigger value="export" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm">
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -146,6 +152,10 @@ export default function Dashboard() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="annual" className="space-y-6">
+            <AnnualOverview contractors={contractors} jobs={jobs} />
+          </TabsContent>
+
           <TabsContent value="export" className="space-y-6">
             <Card>
               <CardHeader>
@@ -172,7 +182,7 @@ export default function Dashboard() {
                 <div className="text-center py-8">
                   <Settings className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                   <p className="text-gray-600">Settings panel coming soon...</p>
-                </div>
+        </div>
               </CardContent>
             </Card>
           </TabsContent>
