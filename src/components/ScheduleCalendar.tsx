@@ -11,8 +11,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Calendar as CalendarIcon, Clock, User, MapPin, Edit, Trash2 } from 'lucide-react';
-import { format, isSameDay, addDays, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
+import { Plus, Calendar as CalendarIcon, Clock, User, MapPin, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, isSameDay, addDays, startOfWeek, endOfWeek, eachDayOfInterval, addMonths, subMonths, getYear, getMonth } from 'date-fns';
 import { ScheduleEntry, Contractor } from '@/types';
 import { demoScheduleEntries, demoJobs } from '@/data/demo-data';
 import { saveScheduleEntries, loadScheduleEntries } from '@/lib/storage';
@@ -25,6 +25,7 @@ interface ScheduleCalendarProps {
 export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps) {
   const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>(demoScheduleEntries);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<ScheduleEntry | null>(null);
   const [formData, setFormData] = useState<Partial<ScheduleEntry>>({
@@ -131,6 +132,44 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
   };
 
   const weekData = getEntriesForWeek(selectedDate);
+
+  // Calendar navigation functions
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setCurrentMonth(prev => subMonths(prev, 1));
+    } else {
+      setCurrentMonth(prev => addMonths(prev, 1));
+    }
+  };
+
+  const navigateToMonth = (month: number) => {
+    setCurrentMonth(prev => new Date(getYear(prev), month, 1));
+  };
+
+  const navigateToYear = (year: number) => {
+    setCurrentMonth(prev => new Date(year, getMonth(prev), 1));
+  };
+
+  // Generate month and year options
+  const monthOptions = [
+    { value: 0, label: 'January' },
+    { value: 1, label: 'February' },
+    { value: 2, label: 'March' },
+    { value: 3, label: 'April' },
+    { value: 4, label: 'May' },
+    { value: 5, label: 'June' },
+    { value: 6, label: 'July' },
+    { value: 7, label: 'August' },
+    { value: 8, label: 'September' },
+    { value: 9, label: 'October' },
+    { value: 10, label: 'November' },
+    { value: 11, label: 'December' },
+  ];
+
+  const yearOptions = Array.from({ length: 10 }, (_, i) => {
+    const year = getYear(new Date()) - 2 + i;
+    return { value: year, label: year.toString() };
+  });
   const todayEntries = getEntriesForDate(selectedDate);
 
   // Create modifier function for calendar highlighting
@@ -290,10 +329,82 @@ export default function ScheduleCalendar({ contractors }: ScheduleCalendarProps)
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
+              {/* Month/Year Navigation */}
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateMonth('prev')}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={getMonth(currentMonth).toString()}
+                      onValueChange={(value) => navigateToMonth(parseInt(value))}
+                    >
+                      <SelectTrigger className="w-32 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {monthOptions.map(month => (
+                          <SelectItem key={month.value} value={month.value.toString()}>
+                            {month.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select
+                      value={getYear(currentMonth).toString()}
+                      onValueChange={(value) => navigateToYear(parseInt(value))}
+                    >
+                      <SelectTrigger className="w-20 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {yearOptions.map(year => (
+                          <SelectItem key={year.value} value={year.value.toString()}>
+                            {year.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateMonth('next')}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const today = new Date();
+                    setCurrentMonth(today);
+                    setSelectedDate(today);
+                  }}
+                  className="h-8"
+                >
+                  Today
+                </Button>
+              </div>
+              
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={(date) => date && setSelectedDate(date)}
+                month={currentMonth}
+                onMonthChange={setCurrentMonth}
                 weekStartsOn={1}
                 className="rounded-md border w-full [&_.rdp-table]:border-separate [&_.rdp-table]:border-spacing-0 [&_.rdp-table]:border-collapse [&_.rdp-cell]:border [&_.rdp-cell]:border-gray-300 [&_.rdp-cell]:border-solid [&_.rdp-cell]:p-3 [&_.rdp-cell]:text-center [&_.rdp-head_cell]:border [&_.rdp-head_cell]:border-gray-300 [&_.rdp-head_cell]:border-solid [&_.rdp-head_cell]:p-3 [&_.rdp-head_cell]:bg-gray-50 [&_.rdp-head_cell]:font-semibold [&_.rdp-day]:border [&_.rdp-day]:border-gray-300 [&_.rdp-day]:border-solid [&_.rdp-day]:hover:bg-gray-100 [&_.rdp-day]:min-h-[100px] [&_.rdp-day]:flex [&_.rdp-day]:flex-col [&_.rdp-day]:items-center [&_.rdp-day]:justify-end [&_.rdp-day]:pb-2 [&_.rdp-day]:overflow-hidden [&_.rdp-day]:relative"
                 modifiers={{

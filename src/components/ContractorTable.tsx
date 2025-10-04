@@ -11,6 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { LoadingButton } from '@/components/ui/loading';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { AutoSaveIndicator } from '@/components/AutoSaveIndicator';
 import { Contractor, Job, Tag } from '@/types';
 import { demoTags, demoJobs } from '@/data/demo-data';
 import { saveContractors, saveTags, loadTags, loadJobs } from '@/lib/storage';
@@ -31,6 +34,7 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
   const [tags, setTags] = useState<Tag[]>(demoTags);
   const [isCreatingTag, setIsCreatingTag] = useState(false);
   const [newTagName, setNewTagName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [newTagColor, setNewTagColor] = useState('#3B82F6');
   const [formData, setFormData] = useState<Partial<Contractor>>({
     name: '',
@@ -41,6 +45,20 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
     tags: [],
     hourlyRate: 0,
     notes: '',
+  });
+
+  // Auto-save form data
+  const { isDirty: isFormDirty } = useAutoSave({
+    data: formData,
+    onSave: (data) => {
+      // Auto-save is handled by the manual save function
+      console.log('Auto-saving form data:', data);
+    },
+    delay: 3000,
+    enabled: isDialogOpen && Object.values(formData).some(value => 
+      value !== '' && value !== 0 && value !== null && value !== undefined
+    ),
+    storageKey: 'contractor-form-draft'
   });
 
   // Load tags and jobs from localStorage after component mounts
@@ -88,41 +106,51 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
     toast.success('Contractor deleted successfully');
   };
 
-  const handleSaveContractor = () => {
+  const handleSaveContractor = async () => {
     if (!formData.name) {
       toast.error('Please enter the contractor name');
       return;
     }
 
-    const contractorData: Contractor = {
-      id: editingContractor?.id || Date.now().toString(),
-      name: formData.name || '',
-      company: formData.company || '',
-      email: formData.email || '',
-      phone: formData.phone || '',
-      specialty: formData.specialty || '',
-      tags: formData.tags || [],
-      hourlyRate: formData.hourlyRate || 0,
-      notes: formData.notes || '',
-      createdAt: editingContractor?.createdAt || new Date(),
-      updatedAt: new Date(),
-    };
+    setIsLoading(true);
+    
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const contractorData: Contractor = {
+        id: editingContractor?.id || Date.now().toString(),
+        name: formData.name || '',
+        company: formData.company || '',
+        email: formData.email || '',
+        phone: formData.phone || '',
+        specialty: formData.specialty || '',
+        tags: formData.tags || [],
+        hourlyRate: formData.hourlyRate || 0,
+        notes: formData.notes || '',
+        createdAt: editingContractor?.createdAt || new Date(),
+        updatedAt: new Date(),
+      };
 
-    let updatedContractors: Contractor[];
-    if (editingContractor) {
-      updatedContractors = contractors.map(c => c.id === editingContractor.id ? contractorData : c);
-      setContractors(updatedContractors);
-      toast.success('Contractor updated successfully');
-    } else {
-      updatedContractors = [...contractors, contractorData];
-      setContractors(updatedContractors);
-      toast.success('Contractor added successfully');
+      let updatedContractors: Contractor[];
+      if (editingContractor) {
+        updatedContractors = contractors.map(c => c.id === editingContractor.id ? contractorData : c);
+        setContractors(updatedContractors);
+        toast.success('Contractor updated successfully');
+      } else {
+        updatedContractors = [...contractors, contractorData];
+        setContractors(updatedContractors);
+        toast.success('Contractor added successfully');
+      }
+
+      // Save to localStorage
+      saveContractors(updatedContractors);
+      setIsDialogOpen(false);
+    } catch (_error) {
+      toast.error('Failed to save contractor');
+    } finally {
+      setIsLoading(false);
     }
-
-    // Save to localStorage
-    saveContractors(updatedContractors);
-
-    setIsDialogOpen(false);
   };
 
   const handleTagToggle = (tag: string) => {
@@ -366,8 +394,9 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
               {editingContractor ? 'Edit Company' : 'Add New Company'}
+              <AutoSaveIndicator isDirty={isFormDirty} />
             </DialogTitle>
             <DialogDescription>
               {editingContractor ? 'Update company information' : 'Add a new company to your system'}
@@ -553,9 +582,13 @@ export default function ContractorTable({ contractors, setContractors, jobs, onJ
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveContractor}>
+            <LoadingButton
+              isLoading={isLoading}
+              onClick={handleSaveContractor}
+              disabled={isLoading}
+            >
               {editingContractor ? 'Update' : 'Add'} Contractor
-            </Button>
+            </LoadingButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
